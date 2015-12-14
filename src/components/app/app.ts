@@ -5,6 +5,7 @@ import { AuthRouteHelper } from '../../core/auth/auth-route-helper';
 import { AuthService } from '../../core/auth/auth-service';
 import { SignIn } from '../sign-in/sign-in';
 import { Tasks } from '../tasks/tasks';
+import { Cards } from '../cards/cards'
 
 const styles: string = require('./app.scss');
 const template: string = require('./app.html');
@@ -25,7 +26,8 @@ const template: string = require('./app.html');
 
 @RouteConfig([
   {path: '/', component: SignIn, as: 'SignIn'},
-  {path: '/tasks', component: Tasks, as: 'Tasks'}
+  {path: '/tasks', component: Tasks, as: 'Tasks'},
+  {path: '/cards', component: Cards, as: 'Cards'}
 ])
 
 export class App {

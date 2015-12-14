@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/r-park/todo-angular2-firebase.svg?branch=master)](https://travis-ci.org/r-park/todo-angular2-firebase)
 
 
-# Todo app with Angular 2 and Firebase
+# ZalMemo a social memory game with Zalando API.
 A simple Todo app example built with **Angular 2**. The app features a **Firebase** backend with **OAuth** authentication, and an **immutable** task list. Try the demo at <a href="https://ng2-todo-app.firebaseapp.com" target="_blank">ng2-todo-app.firebaseapp.com</a>, and check out the <a href="https://github.com/r-park/angular2-webpack-seed" target="_blank">webpack seed</a> this project is based on.
 
 - Angular `2.0.0-alpha.53`

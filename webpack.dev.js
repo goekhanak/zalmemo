@@ -26,6 +26,7 @@ module.exports = {
       'angular2/common',
       'angular2/core',
       'angular2/router',
+      'angular2/http',
       'firebase',
       'immutable'
     ]

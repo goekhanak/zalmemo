@@ -1,0 +1,19 @@
+<div class="g-row">
+
+
+    <br>
+
+
+    <div *ngFor="#card of cards" class="thumbnail img-responsive">
+        <img  src='{{card.media.images[0].mediumHdUrl}}' width="142" height="200" class="img-rounded" >
+    </div>
+
+
+
+    <ul>
+        <li *ngFor="#card of cards">
+            {{card.id}}  {{card.name}}
+        </li>
+    </ul>
+
+</div>
