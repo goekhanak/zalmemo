@@ -1,14 +1,16 @@
-<div class="g-row">
+<div class="container">
 
 
     <br>
 
+    <div class="row">
+        <div  *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
+            <div class="thumbnail ">
+                <img  src='{{card.media.images[0].mediumHdUrl}}' width="142" height="200" class="img-rounded" >
+            </div>
+        </div>
 
-    <div *ngFor="#card of cards" class="thumbnail img-responsive">
-        <img  src='{{card.media.images[0].mediumHdUrl}}' width="142" height="200" class="img-rounded" >
     </div>
-
-
 
     <ul>
         <li *ngFor="#card of cards">

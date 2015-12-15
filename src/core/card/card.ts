@@ -3,7 +3,8 @@ export interface ICard {
     name: string,
     shopUrl: string;
     title: string;
-    media : ICardMedia ;
+    media: ICardMedia;
+    flipped: boolean;
 }
 
 export interface ICardMedia {

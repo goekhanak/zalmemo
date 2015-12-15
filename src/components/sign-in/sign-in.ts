@@ -37,6 +37,6 @@ export class SignIn {
   }
 
   private postSignIn(): void {
-    this.router.navigate(['/Tasks']);
+    this.router.navigate(['/Cards']);
   }
 }

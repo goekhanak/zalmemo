@@ -16,7 +16,7 @@ export class AuthRouteHelper {
 
   static requireUnauth(): boolean {
     const { auth, router } = AuthRouteHelper;
-    if (auth.authenticated) router.navigate(['/Tasks']);
+    if (auth.authenticated) router.navigate(['/Cards']);
     return !auth.authenticated;
   }
 

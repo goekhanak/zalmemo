@@ -8,7 +8,7 @@ export class CardService {
 
 
     public getCards (){
-        return this.http.get('https://api.zalando.com/articles?category=womens-shoes&pageSize=6')
+        return this.http.get('https://api.zalando.com/articles?category=womens-shoes&pageSize=12')
             .map(res => res.json());
     }
 
