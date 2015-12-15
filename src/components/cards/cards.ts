@@ -4,6 +4,7 @@ import { AuthRouteHelper } from '../../core/auth/auth-route-helper';
 import { CardService } from '../../core/card/card.service';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
 import { ICard } from  '../../core/card/card'
+import {Card} from "../../core/card/card";
 
 
 const styles: string = require('./cards.scss');
@@ -44,7 +45,40 @@ export class Cards {
     setCards(data){
         console.log('Successfully get payload: ' + data);
         console.log('Successfully get payload jsonResponse: ' + data);
-        this.cards = data.content;
+        this.cards = [];
+        this.addCardsRandomly(data);
+        this.addCardsRandomly(data);
+    }
+
+    private addCardsRandomly(data) {
+        data.content = this.shuffle(data.content);
+        for (var i = 0; i < data.content.length; i++) {
+            let article: any = data.content[i];
+
+            console.log('Article: ' + article);
+
+            let card: ICard = new Card(article.id, article.name, article.shopUrl, article.media.images[0].mediumUrl);
+            this.cards.push(card);
+        }
+    };
+
+    shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex ;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
     }
 
     pickCard(card:ICard){

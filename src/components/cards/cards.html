@@ -6,7 +6,7 @@
     <div class="row">
         <div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
             <div class="thumbnail img-responsive">
-                <img  src='{{card.media.images[0].mediumHdUrl}}' width="142" height="200" class="img-rounded" >
+                <img  src='{{card.mediumHdUrl}}' width="142" height="200" class="img-rounded" >
                 <!--<img src='img/zalando-vertical.png' class="img-rounded">-->
             </div>
         </div>
@@ -15,9 +15,9 @@
     <div class="row">
         <div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
             <div class="card-container"  (click)="pickCard(card)">
-                <div class="card"  [ngClass]="{'flipped': card.flipped}">
+                <div class="card "  [ngClass]="{'flipped': card.flipped}">
                     <img class="front img-rounded img-thumbnail"  src='img/zalando-vertical.png' >
-                    <img class="back img-rounded img-thumbnail"   src='{{card.media.images[0].mediumHdUrl}}'>
+                    <img class="back img-rounded img-thumbnail"   src='{{card.mediumHdUrl}}'>
                 </div>
             </div>
         </div>
