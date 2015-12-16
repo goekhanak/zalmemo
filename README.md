@@ -27,8 +27,8 @@ Check out the <a href="https://github.com/r-park/todo-angular2-firebase" target=
 
 ## Quick Start
 ```bash
-$ git clone https://github.com/r-park/todo-angular2-firebase.git
-$ cd todo-angular2-firebase
+$ git clone git@github.com:zalando/zalmemo.git
+$ cd zalmemo
 $ npm install
 $ ./node_modules/.bin/gulp
 ```
