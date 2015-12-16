@@ -2,7 +2,7 @@
 
 
 # ZalMemo a social memory game with Zalando API.
-A simple Todo app example built with **Angular 2**. The app features a **Firebase** backend with **OAuth** authentication, and uses **<a href="https://github.com/zalando/shop-api-documentation" target="_blank">Zalando API</a>**. 
+A simple Todo app example built with **Angular 2**. The app features a **Firebase** backend with **OAuth** authentication, and uses **<a href="https://github.com/zalando/shop-api-documentation" target="_blank">Zalando Shop API</a>**. 
 
 Try out the live demo at <a href="https://crackling-inferno-6105.firebaseapp.com/" target="_blank">https://crackling-inferno-6105.firebaseapp.com</a>
 
