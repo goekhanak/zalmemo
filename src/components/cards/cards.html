@@ -9,8 +9,8 @@
         <!--</div>-->
     <!--</div>-->
 
-    <div class="row">
-        <div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
+    <div class="row" *ngIf="game">
+        <div *ngFor="#card of game.cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
             <div class="card-container" (click)="pickCard(card)" (dblclick)="onDoubleClick(card)">
                 <div class="card" [ngClass]="{'flipped': card.flipped}">
                     <img class="front img-rounded img-thumbnail "  src='http://i.imgur.com/dt8vuIR.png'>

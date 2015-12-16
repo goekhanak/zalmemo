@@ -30,3 +30,22 @@ export class Card implements ICard {
         this.mediumHdUrl = mediumHdUrl;
     }
 }
+
+export interface IGame{
+    cards: ICard[];
+    unmatchedPairs;
+    firstPick : ICard;
+    secondPick: ICard;
+}
+
+export class Game implements IGame {
+    cards: ICard[];
+    unmatchedPairs;
+    firstPick : ICard;
+    secondPick: ICard;
+
+    constructor(cards: ICard[], unmatchedPairs: number){
+        this.cards = cards;
+        this.unmatchedPairs = unmatchedPairs;
+    }
+}

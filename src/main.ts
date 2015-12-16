@@ -10,8 +10,10 @@ import { App } from './components/app/app';
 // modules
 import { AUTH_PROVIDERS } from './modules/auth/providers';
 import { TASK_PROVIDERS } from './modules/task/providers';
+import { CARD_PROVIDERS } from './modules/card/card.providers';
 
-import {CardService} from './core/card/card.service'
+
+import {CardService} from './modules/card/card.service'
 
 // global styles
 import './styles/styles.scss';
@@ -26,6 +28,7 @@ bootstrap(App, [
   HTTP_PROVIDERS,
   AUTH_PROVIDERS,
   TASK_PROVIDERS,
+  CARD_PROVIDERS,
   CardService,
   provide(APP_BASE_HREF, {useValue: '/'})
 ]).catch((error: Error) => console.error(error));
