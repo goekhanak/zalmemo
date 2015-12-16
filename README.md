@@ -8,20 +8,30 @@ Try out the live demo at <a href="https://crackling-inferno-6105.firebaseapp.com
 
 Check out the <a href="https://github.com/r-park/todo-angular2-firebase" target="_blank">todo-angular2-firebase</a> this project is based on.
 
-- Angular `2.0.0-alpha.53`
+- Angular `2.0.0-beta.0`
 - Firebase
   - JSON Datastore
   - OAuth authentication with GitHub, Google, and Twitter
   - Hosting
 - Gulp `4.0.0-alpha.2`
 - Immutable
+- RxJS `5.0.0-beta.0`
 - SASS
-- Typescript `~1.7.3`
+- Typescript `~1.7.5`
 - Webpack
   - Inlines external SCSS files
   - Inlines external HTML templates
   - Bundles and minifies release builds
   - Injects style and script tags into index.html
+
+
+## Quick Start
+```bash
+$ git clone https://github.com/r-park/todo-angular2-firebase.git
+$ cd todo-angular2-firebase
+$ npm install
+$ ./node_modules/.bin/gulp
+```
 
 
 ## Developing
