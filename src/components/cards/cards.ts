@@ -1,6 +1,6 @@
 import { Component, View } from 'angular2/core';
 import { CanActivate } from 'angular2/router';
-import { AuthRouteHelper } from '../../core/auth/auth-route-helper';
+import { AuthRouteHelper } from '../../modules/auth/auth-route-helper';
 import { CardService } from '../../core/card/card.service';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
 import { ICard } from  '../../core/card/card'
