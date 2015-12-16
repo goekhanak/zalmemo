@@ -1,33 +1,33 @@
 <div class="container">
 
-
-    <br>
-
-    <div class="row">
-        <div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
-            <div class="thumbnail img-responsive">
-                <img  src='{{card.mediumHdUrl}}' width="142" height="200" class="img-rounded" >
-                <!--<img src='img/zalando-vertical.png' class="img-rounded">-->
-            </div>
-        </div>
-    </div>
+    <!--<div class="row">-->
+        <!--<div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">-->
+            <!--<div class="thumbnail img-responsive">-->
+                <!--<img  src='{{card.mediumHdUrl}}' width="142" height="200" class="img-rounded" >-->
+                <!--&lt;!&ndash;<img src='img/zalando-vertical.png' class="img-rounded card-back">&ndash;&gt;-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 
     <div class="row">
         <div *ngFor="#card of cards" class="col-lg-3 col-mg-3 col-sm-4 col-xs-6">
-            <div class="card-container"  (click)="pickCard(card)">
-                <div class="card "  [ngClass]="{'flipped': card.flipped}">
-                    <img class="front img-rounded img-thumbnail"  src='img/zalando-vertical.png' >
-                    <img class="back img-rounded img-thumbnail"   src='{{card.mediumHdUrl}}'>
+            <div class="card-container" (click)="pickCard(card)" (dblclick)="onDoubleClick(card)">
+                <div class="card" [ngClass]="{'flipped': card.flipped}">
+                    <img class="front img-rounded img-thumbnail "  src='http://i.imgur.com/dt8vuIR.png'>
+                    <img class="back img-rounded img-thumbnail " [ngClass]="{'opacity' : isCardRevealed(card)}"  src='{{card.mediumHdUrl}}'>
                 </div>
             </div>
         </div>
     </div>
 
+    <!--<p>-->
+        <!--unmatchedPairs: {{unmatchedPairs}}-->
+    <!--</p>-->
 
-    <ul>
-        <li *ngFor="#card of cards">
-            {{card.id}} {{card.name}}  flipped: {{card.flipped}}
-        </li>
-    </ul>
+    <!--<ul>-->
+        <!--<li *ngFor="#card of cards">-->
+            <!--{{card.id}} {{card.name}} flipped: {{card.flipped}}-->
+        <!--</li>-->
+    <!--</ul>-->
 
 </div>

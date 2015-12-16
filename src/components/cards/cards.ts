@@ -28,8 +28,10 @@ const template: string = require('./cards.html');
 
 export class Cards {
     public cards : ICard[];
+    public unmatchedPairs;
     private firstPick : ICard;
     private secondPick: ICard;
+
 
     constructor( public cardService :CardService) {
         cardService.getCards().subscribe(
@@ -46,8 +48,20 @@ export class Cards {
         console.log('Successfully get payload: ' + data);
         console.log('Successfully get payload jsonResponse: ' + data);
         this.cards = [];
+        this.unmatchedPairs = data.content.length;
         this.addCardsRandomly(data);
         this.addCardsRandomly(data);
+    }
+
+    isCardRevealed(card: ICard){
+
+        console.log('isCardRevealed unmatchedPairs' + this.unmatchedPairs + ' card id: ' + card.id);
+
+        if(this.unmatchedPairs === 0){
+            return false;
+        }
+
+        return card !== this.firstPick && card !== this.secondPick ? true : false;
     }
 
     private addCardsRandomly(data) {
@@ -81,6 +95,14 @@ export class Cards {
         return array;
     }
 
+    onDoubleClick(card:ICard){
+        console.log('Double Click:' + card.id);
+
+        if(this.unmatchedPairs === 0){
+            window.open(card.shopUrl);
+        }
+    }
+
     pickCard(card:ICard){
         console.log('Flip Card:' + card.id);
 
@@ -107,6 +129,7 @@ export class Cards {
 
             // Do we have a match
             if (this.firstPick.id === card.id) {
+                this.unmatchedPairs--;
                 this.firstPick = this.secondPick = undefined;
             } else { // no match
                 this.secondPick = card;

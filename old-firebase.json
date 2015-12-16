@@ -1,11 +1,6 @@
 {
-  "firebase": "crackling-inferno-6105",
+  "firebase": "ng2-todo-app",
   "public": "target",
-  "ignore": [
-    "firebase.json",
-    "**/.*",
-    "**/node_modules/**"
-  ],
 
   "headers": [
     {
@@ -19,7 +14,7 @@
     },
 
     {
-      "source": "**/*.@(css|html|js|map|png)",
+      "source": "**/*.@(css|html|js|map)",
       "headers": [
         {"key": "Cache-Control", "value": "max-age=3600"}
       ]

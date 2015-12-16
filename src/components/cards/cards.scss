@@ -12,6 +12,11 @@
   perspective: 800px;
 }
 
+.card-back{
+  height: 100%;
+  width: 100%;
+}
+
 .card {
   height: 100%;
   float: none;
@@ -37,6 +42,8 @@
   transform: rotateY( 180deg );
 }
 
+
+
 .card img {
   display: block;
   height: 100%;
@@ -49,6 +56,13 @@
   backface-visibility: hidden;
 }
 
+.card .opacity {
+  opacity:  0.65;
+}
+
+.card .transparent {
+  opacity:  1.0;
+}
 
 
 .card .back {
