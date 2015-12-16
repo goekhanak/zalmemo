@@ -6,63 +6,54 @@ import {Game} from "./card";
 
 
 export class GameService {
-    constructor(private ref: Firebase, private cardService :CardService) {
-
-
+    constructor(private ref: Firebase, private cardService: CardService) {
     }
 
-    createGame(game : IGame){
-            //this.ref.push(game, (error: Error) => {
-            //    if (error) {
-            //        console.error('ERROR @ createGame :', error);
-            //    }
-            //});
-
-        // this.getGame();
+    createGame(game: IGame) {
+        this.ref.push(game, (error: Error) => {
+            if (error) {
+                console.error('ERROR @ createGame :', error);
+            }
+        });
     }
 
-
-    getGame() : Promise<any>{
-
+    getGame(): Promise<any> {
         console.log('Inside get game');
 
-        return new Promise((resolve, reject ) => {
+        return new Promise((resolve, reject) => {
 
+            this.ref.on("value", (snapshot) => {
+                console.log(snapshot.val());
+                let unfinishedGame: IGame = this.getUnfinishedGame(snapshot.val());
+                if (unfinishedGame) {
+                    resolve(unfinishedGame);
+                } else {
+                    this.cardService.getCards().subscribe(
+                        data => {
+                            let game: IGame = this.setCards(data);
+                            resolve(game);
 
-            this.cardService.getCards().subscribe(
-                data => {
-                    let game: IGame = this.setCards(data);
-                    resolve(game);
-
-                },
-                err => {
-                    this.logError(err);
-                    reject(err);
+                        },
+                        err => {
+                            this.logError(err);
+                            reject(err);
+                        }
+                    );
                 }
-            );
+            }, function (err) {
+                console.log("The read failed: " , err.code);
+                reject(err);
+            });
+
+
         });
-
-
-
-
-
-        //this.ref.on("value", function(snapshot) {
-        //    console.log(snapshot.val());
-        //}, function (errorObject) {
-        //    console.log("The read failed: " + errorObject.code);
-        //});
     }
 
-    getUnfinishedGame() :Promise<any> {
-
-        //ref.once('value', () => this.emit());
-
-        return new Promise((resolve, reject ) => {
-            this.ref.once('value', (snapshot) =>
-                {
-                    resolve(snapshot.val());
-                }
-            , reject);
+    updateGame(game: IGame){
+        this.ref.child(game.key).update(game, (error: Error) => {
+            if (error) {
+                console.error('ERROR @ updateGame :', error);
+            }
         });
     }
 
@@ -72,22 +63,25 @@ export class GameService {
         console.log(data);
 
 
-        let articles: any[]  = data.content;
+        let articles: any[] = data.content;
         let cards: ICard[] = [];
 
 
         this.addCardsRandomly(articles, cards);
         this.addCardsRandomly(articles, cards);
 
-        let game: IGame = new Game(cards,articles.length);
+        let game: IGame = new Game(cards, articles.length);
 
         console.log('Created Game');
         console.log(game);
 
+        this.createGame(game);
+
+
         return game;
     }
 
-    private addCardsRandomly(articles : any[], cards : ICard[]) {
+    private addCardsRandomly(articles: any[], cards: ICard[]) {
         articles = this.shuffle(articles);
         for (var i = 0; i < articles.length; i++) {
             let article: any = articles[i];
@@ -98,7 +92,7 @@ export class GameService {
     };
 
     shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex ;
+        var currentIndex = array.length, temporaryValue, randomIndex;
 
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
@@ -118,5 +112,25 @@ export class GameService {
 
     logError(err) {
         console.error('There was an error: ' + err);
+    }
+
+    private  getUnfinishedGame(games: IGame[]) {
+
+        console.log('getUnfinishedGame');
+        console.log(games);
+
+        for (var key in games) {
+            if (games.hasOwnProperty(key)) {
+                console.log(key);
+                console.log(games[key]);
+                let game: IGame = games[key];
+                if (game.unmatchedPairs > 0) {
+                    game.key = key;
+                    return game;
+                }
+            }
+        }
+
+        return undefined;
     }
 }

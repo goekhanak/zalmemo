@@ -1,6 +1,7 @@
 export interface ICard {
 
     id: string;
+    configSku: string;
     name: string,
     shopUrl: string;
     mediumHdUrl: string;
@@ -17,14 +18,17 @@ export interface ICardImage {
 
 export class Card implements ICard {
     id: string;
+    configSku: string;
     name: string;
     shopUrl: string;
     mediumHdUrl: string;
     flipped = false;
+    static counter : number = 0 ;
 
 
-    constructor(id: string, name: string, shopUrl: string, mediumHdUrl: string) {
-        this.id = id;
+    constructor(configSku: string, name: string, shopUrl: string, mediumHdUrl: string) {
+        this.id = configSku + Card.counter++;
+        this.configSku = configSku;
         this.name = name;
         this.shopUrl = shopUrl;
         this.mediumHdUrl = mediumHdUrl;
@@ -32,17 +36,19 @@ export class Card implements ICard {
 }
 
 export interface IGame{
+    key: string;
     cards: ICard[];
     unmatchedPairs;
-    firstPick : ICard;
-    secondPick: ICard;
+    firstPickId : string;
+    secondPickId: string;
 }
 
 export class Game implements IGame {
+    key: string;
     cards: ICard[];
     unmatchedPairs;
-    firstPick : ICard;
-    secondPick: ICard;
+    firstPickId : string;
+    secondPickId: string;
 
     constructor(cards: ICard[], unmatchedPairs: number){
         this.cards = cards;

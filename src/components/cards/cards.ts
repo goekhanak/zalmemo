@@ -53,7 +53,7 @@ export class Cards {
             return false;
         }
 
-        return card !== this.game.firstPick && card !== this.game.secondPick ? true : false;
+        return card.id !== this.game.firstPickId && card.id !== this.game.secondPickId ? true : false;
     }
 
 
@@ -77,35 +77,56 @@ export class Cards {
 
         this.flip(card);
 
-        // FirstPick need to be
-        if (!this.game.firstPick || this.game.secondPick) {
+        let firstPick: ICard = this.getCardForId(this.game.firstPickId);
+        let secondPick: ICard = this.getCardForId(this.game.secondPickId);
 
-            if (this.game.secondPick) {
-                this.flip(this.game.firstPick)
-                this.flip(this.game.secondPick)
-                this.game.firstPick = this.game.secondPick = undefined;
+
+        // FirstPick need to be
+        if (!firstPick || secondPick) {
+
+            if (secondPick) {
+                this.flip(firstPick);
+                this.flip(secondPick);
+                this.game.firstPickId = this.game.secondPickId = '';
             }
 
-            this.game.firstPick = card;
+            this.game.firstPickId = card.id;
 
 
         } else {
 
             // Do we have a match
-            if (this.game.firstPick.id === card.id) {
+            if (firstPick.configSku === card.configSku) {
                 this.game.unmatchedPairs--;
-                this.game.firstPick = this.game.secondPick = undefined;
+                this.game.firstPickId = this.game.secondPickId = '';
             } else { // no match
-                this.game.secondPick = card;
+                this.game.secondPickId = card.id;
             }
         }
+
+        this.gameService.updateGame(this.game);
     }
 
-    private flip(card) {
+    private flip(card: ICard) {
+
+
         if (!card.flipped) {
             card.flipped = true;
         } else {
             card.flipped = false;
         }
-    };
+    }
+
+    private getCardForId(cardId) : ICard {
+        let card: ICard;
+        for (let i : number = 0; i < this.game.cards.length; i++) {
+            if (this.game.cards[i].id === cardId) {
+                card = this.game.cards[i];
+            }
+        }
+
+        console.error('No Card found for id ', cardId);
+
+        return card;
+    }
 }
