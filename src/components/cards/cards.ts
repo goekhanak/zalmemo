@@ -70,6 +70,10 @@ export class Cards {
         if(this.game.unmatchedPairs  !== updatedGame.unmatchedPairs){
             this.game.unmatchedPairs  = updatedGame.unmatchedPairs
         }
+
+        if(this.game.flipCounter  !== updatedGame.flipCounter){
+            this.game.flipCounter  = updatedGame.flipCounter
+        }
     }
 
     logError(err) {
@@ -78,8 +82,6 @@ export class Cards {
 
 
     isCardRevealed(card: ICard){
-
-
 
         if(this.game.unmatchedPairs === 0){
             return false;
@@ -113,6 +115,8 @@ export class Cards {
 
         this.flip(card);
 
+        this.game.flipCounter++;
+
         let firstPick: ICard = this.getCardForId(this.game.firstPickId);
         let secondPick: ICard = this.getCardForId(this.game.secondPickId);
 
@@ -135,6 +139,13 @@ export class Cards {
             if (firstPick.configSku === card.configSku) {
                 this.game.unmatchedPairs--;
                 this.game.firstPickId = this.game.secondPickId = '';
+
+                // game over
+                if(this.game.unmatchedPairs === 0){
+                    alert('Congratulations you revealed all cards in ' + this.game.flipCounter/2+' attempts! ' +
+                        '\n You can double click on any article to display at Zalando shop.')
+                }
+
             } else { // no match
                 this.game.secondPickId = card.id;
             }
@@ -144,7 +155,6 @@ export class Cards {
     }
 
     private flip(card: ICard) {
-
 
         if (!card.flipped) {
             card.flipped = true;

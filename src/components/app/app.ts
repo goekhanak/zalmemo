@@ -6,6 +6,7 @@ import { AuthService } from '../../modules/auth/auth-service';
 import { SignIn } from '../sign-in/sign-in';
 import { Tasks } from '../tasks/tasks';
 import { Cards } from '../cards/cards'
+import {CreateGame} from '../create/create'
 
 const styles: string = require('./app.scss');
 const template: string = require('./app.html');
@@ -27,6 +28,7 @@ const template: string = require('./app.html');
 @RouteConfig([
   {path: '/', component: SignIn, as: 'SignIn'},
   {path: '/tasks', component: Tasks, as: 'Tasks'},
+  {path: '/create', component: CreateGame, as: 'CreateGame'},
   {path: '/cards', component: Cards, as: 'Cards'}
 ])
 

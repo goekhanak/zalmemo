@@ -41,6 +41,7 @@ export interface IGame{
     unmatchedPairs;
     firstPickId : string;
     secondPickId: string;
+    flipCounter: number;
 }
 
 export class Game implements IGame {
@@ -49,9 +50,32 @@ export class Game implements IGame {
     unmatchedPairs;
     firstPickId : string;
     secondPickId: string;
+    flipCounter: number;
+
 
     constructor(cards: ICard[], unmatchedPairs: number){
         this.cards = cards;
         this.unmatchedPairs = unmatchedPairs;
+        this.flipCounter = 0;
+    }
+}
+
+export class Level{
+    pairs: number;
+    name: string;
+
+    constructor(pairs : number, name: string){
+        this.pairs = pairs;
+        this.name = name;
+    }
+}
+
+export class GameOptions{
+    category: string;
+    level: Level;
+
+    constructor(category : string, level: Level){
+        this.category = category;
+        this.level = level;
     }
 }

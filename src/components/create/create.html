@@ -1,0 +1,50 @@
+<div class="container">
+
+    <div class="row center-parent">
+        <h2>Choose ZalMemo options</h2>
+    </div>
+
+    <br>
+
+    <div class="row center-parent">
+        <h3>Category</h3>
+    </div>
+
+    <br>
+
+   <div class="row center-parent">
+       <div class="btn-group btn-group-lg ">
+           <button *ngFor="#category of categories" type="button" class="btn btn-primary"
+                   (click)="selectCategory(category)" [ngClass]="{'active' : isCategorySelected(category)}">
+               {{category}}
+           </button>
+       </div>
+   </div>
+
+    <br><br>
+
+    <div class="row center-parent">
+        <h3>Difficulty Level</h3>
+    </div>
+
+    <br>
+
+    <div class="row center-parent">
+        <div class="btn-group btn-group-lg ">
+            <button *ngFor="#level of levels" type="button" class="btn btn-primary"
+                    (click)="selectLevel(level)" [ngClass]="{'active' : isLevelSelected(level)}">
+                {{level.name}} ({{level.pairs*2}} cards)
+            </button>
+        </div>
+    </div>
+
+
+    <br><br>
+
+    <div class="row center-parent">
+        <button  type="button" class="btn btn-lg btn-primary"
+                (click)="createGame()" [ngClass]="{'disabled' : !gameOptionsChosen()}">
+            Start Game
+        </button>
+    </div>
+</div>

@@ -37,6 +37,6 @@ export class SignIn {
   }
 
   private postSignIn(): void {
-    this.router.navigate(['/Cards']);
+    this.router.navigate(['/CreateGame']);
   }
 }

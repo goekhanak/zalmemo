@@ -4,6 +4,9 @@ import {ICard} from "./card";
 import {Card} from "./card";
 import {Game} from "./card";
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
+import {GameOptions} from "./card";
+import {LegacyHtmlParser} from "angular2/src/compiler/legacy_template";
+import {Level} from "./card";
 
 
 export class GameService {
@@ -12,6 +15,21 @@ export class GameService {
 
     constructor(private ref: Firebase, private cardService: CardService) {
 
+    }
+
+    public createNewGame(gameOptions: GameOptions){
+        return new Promise((resolve, reject) => {
+            this.cardService.getCards(gameOptions).subscribe(
+                data => {
+                    let game: IGame = this.generateGame(data);
+                    resolve(game);
+                },
+                err => {
+                    this.logError(err);
+                    reject(err);
+                }
+            );
+        });
     }
 
     public getGame(): Promise<any> {
@@ -26,9 +44,10 @@ export class GameService {
                     this.subscribeUpdates(unfinishedGame)
                     resolve(unfinishedGame);
                 } else {
-                    this.cardService.getCards().subscribe(
+                    let gameOptions = new GameOptions('kids', new Level(6,'Easy'))
+                    this.cardService.getCards(gameOptions).subscribe(
                         data => {
-                            let game: IGame = this.createGame(data);
+                            let game: IGame = this.generateGame(data);
                             this.subscribeUpdates(game)
                             resolve(game);
 
@@ -71,7 +90,10 @@ export class GameService {
         this.game.next(snapshot.val());
     }
 
-    private createGame(data): IGame {
+
+
+
+    private generateGame(data): IGame {
 
         console.log('inside Set Cards');
         console.log(data);
@@ -80,9 +102,10 @@ export class GameService {
         let articles: any[] = data.content;
         let cards: ICard[] = [];
 
+        this.addCards(articles, cards);
+        this.addCards(articles, cards);
 
-        this.addCardsRandomly(articles, cards);
-        this.addCardsRandomly(articles, cards);
+        cards = this.shuffleCards(cards);
 
         let game: IGame = new Game(cards, articles.length);
 
@@ -104,8 +127,8 @@ export class GameService {
         game.key = newRef.key();
     }
 
-    private addCardsRandomly(articles: any[], cards: ICard[]) {
-        articles = this.shuffle(articles);
+    private addCards(articles: any[], cards: ICard[]) {
+
         for (var i = 0; i < articles.length; i++) {
             let article: any = articles[i];
 
@@ -114,7 +137,7 @@ export class GameService {
         }
     };
 
-    private shuffle(array) {
+    private shuffleCards(array: ICard[]): ICard[] {
         var currentIndex = array.length, temporaryValue, randomIndex;
 
         // While there remain elements to shuffle...

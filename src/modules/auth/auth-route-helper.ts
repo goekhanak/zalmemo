@@ -16,7 +16,7 @@ export class AuthRouteHelper {
 
   static requireUnauth(): boolean {
     const { auth, router } = AuthRouteHelper;
-    if (auth.authenticated) router.navigate(['/Cards']);
+    if (auth.authenticated) router.navigate(['/CreateGame']);
     return !auth.authenticated;
   }
 

@@ -1,21 +1,22 @@
 import { Injectable } from 'angular2/core';
 import {Http, Headers, RequestOptions} from 'angular2/http';
 import {Observable} from 'rxjs/Observable';
+import {GameOptions} from "./card";
 
 @Injectable()
 export class CardService {
     constructor(private http: Http) { }
 
 
-    public getCards() {
+    public getCards(gameOptions: GameOptions) {
         // we can change Zalando Shop based on the language
         let options = new RequestOptions({
             headers: new Headers({ 'Accept-Language': 'en-EN' })
         });
         // configure category and number of random items to retrieve
-        let category = 'kids';
-        let numberOfItems = 6;
-        
+        let category = gameOptions.category;
+        let numberOfItems = gameOptions.level.pairs;
+
         let resourceURL = 'https://api.zalando.com/articles?category=' + category + '&pageSize=1&page=';
         return this.http.get(resourceURL + 1, options)
             .map(res => { return res.json().totalPages })
@@ -35,7 +36,7 @@ export class CardService {
                 return Observable.forkJoin(list, function(...responses:any[]) {
                     var articleList: any[] = [];
                     responses.forEach(res => articleList.push(res.json().content[0]));
-                    
+
                     return {
                         content: articleList
                     }
