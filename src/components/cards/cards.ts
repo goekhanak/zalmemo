@@ -8,6 +8,8 @@ import { ICard } from  '../../modules/card/card'
 import {Card} from "../../modules/card/card";
 import {Game} from "../../modules/card/card";
 import {IGame} from "../../modules/card/card";
+import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
+import {Input} from "angular2/core";
 
 
 const styles: string = require('./cards.scss');
@@ -32,6 +34,8 @@ const template: string = require('./cards.html');
 export class Cards {
     public game : IGame;
 
+    //@Input() gameSubject: ReplaySubject<IGame>;
+
 
     constructor(  public gameService: GameService) {
 
@@ -40,6 +44,32 @@ export class Cards {
             console.log(game);
             this.game = game;
         });
+
+        this.gameService.game.subscribe((data: IGame) =>{
+            console.log('Inside Subscribe: ', data);
+            this.updateView(data);
+        } );
+    }
+
+    updateView(updatedGame: IGame) : void {
+        if(this.game.firstPickId  !== updatedGame.firstPickId){
+            this.game.firstPickId = updatedGame.firstPickId;
+        }
+
+        if(this.game.secondPickId  !== updatedGame.secondPickId){
+            this.game.secondPickId = updatedGame.secondPickId;
+        }
+
+        for(let i= 0; i < this.game.cards.length && i < updatedGame.cards.length  ;i++){
+            console.log('Inside card loop', updatedGame.cards[i]);
+            if(this.game.cards[i].flipped !== updatedGame.cards[i].flipped){
+                this.game.cards[i].flipped = updatedGame.cards[i].flipped
+            }
+        }
+
+        if(this.game.unmatchedPairs  !== updatedGame.unmatchedPairs){
+            this.game.unmatchedPairs  = updatedGame.unmatchedPairs
+        }
     }
 
     logError(err) {
@@ -48,6 +78,8 @@ export class Cards {
 
 
     isCardRevealed(card: ICard){
+
+
 
         if(this.game.unmatchedPairs === 0){
             return false;
@@ -60,7 +92,11 @@ export class Cards {
 
 
     onDoubleClick(card:ICard){
+
         console.log('Double Click:' + card.id);
+        console.log('this.gameSubject: ', this.gameService.game);
+
+
 
         if(this.game.unmatchedPairs === 0){
             window.open(card.shopUrl);

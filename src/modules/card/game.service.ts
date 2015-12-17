@@ -3,12 +3,12 @@ import { CardService} from './card.service'
 import {ICard} from "./card";
 import {Card} from "./card";
 import {Game} from "./card";
-import { EventEmitter } from "angular2/core"
+import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 
 
 export class GameService {
 
-    _emitter: EventEmitter<any> = new EventEmitter();
+    game: ReplaySubject<IGame> = new ReplaySubject(1);
 
     constructor(private ref: Firebase, private cardService: CardService) {
 
@@ -29,7 +29,7 @@ export class GameService {
                     this.cardService.getCards().subscribe(
                         data => {
                             let game: IGame = this.createGame(data);
-                            this.subscribeUpdates(unfinishedGame)
+                            this.subscribeUpdates(game)
                             resolve(game);
 
                         },
@@ -60,14 +60,15 @@ export class GameService {
         console.log('Gemaref: ', gameRef);
 
         gameRef.on('value', this.listenUpdates.bind(this));
+
+
     }
 
     private listenUpdates(snapshot: FirebaseDataSnapshot): void {
         console.log('UpdatedDataKey: ', snapshot.key());
         console.log('UpdatedData: ', snapshot.val());
 
-        this._emitter._next(snapshot.val());
-        this._emitter.emit(snapshot.val());
+        this.game.next(snapshot.val());
     }
 
     private createGame(data): IGame {
