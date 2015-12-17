@@ -10,11 +10,13 @@ export class GameService {
     }
 
     createGame(game: IGame) {
-        this.ref.push(game, (error: Error) => {
+       let newRef=  this.ref.push(game, (error: Error) => {
             if (error) {
                 console.error('ERROR @ createGame :', error);
             }
         });
+
+        game.key = newRef.key();
     }
 
     getGame(): Promise<any> {
