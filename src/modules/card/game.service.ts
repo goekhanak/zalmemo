@@ -3,36 +3,33 @@ import { CardService} from './card.service'
 import {ICard} from "./card";
 import {Card} from "./card";
 import {Game} from "./card";
+import { EventEmitter } from "angular2/core"
 
 
 export class GameService {
+
+    _emitter: EventEmitter<any> = new EventEmitter();
+
     constructor(private ref: Firebase, private cardService: CardService) {
+
     }
 
-    createGame(game: IGame) {
-       let newRef=  this.ref.push(game, (error: Error) => {
-            if (error) {
-                console.error('ERROR @ createGame :', error);
-            }
-        });
-
-        game.key = newRef.key();
-    }
-
-    getGame(): Promise<any> {
+    public getGame(): Promise<any> {
         console.log('Inside get game');
 
         return new Promise((resolve, reject) => {
 
-            this.ref.on("value", (snapshot) => {
+            this.ref.once("value", (snapshot) => {
                 console.log(snapshot.val());
                 let unfinishedGame: IGame = this.getUnfinishedGame(snapshot.val());
                 if (unfinishedGame) {
+                    this.subscribeUpdates(unfinishedGame)
                     resolve(unfinishedGame);
                 } else {
                     this.cardService.getCards().subscribe(
                         data => {
-                            let game: IGame = this.setCards(data);
+                            let game: IGame = this.createGame(data);
+                            this.subscribeUpdates(unfinishedGame)
                             resolve(game);
 
                         },
@@ -46,12 +43,10 @@ export class GameService {
                 console.log("The read failed: " , err.code);
                 reject(err);
             });
-
-
         });
     }
 
-    updateGame(game: IGame){
+    public updateGame(game: IGame){
         this.ref.child(game.key).update(game, (error: Error) => {
             if (error) {
                 console.error('ERROR @ updateGame :', error);
@@ -59,7 +54,23 @@ export class GameService {
         });
     }
 
-    private setCards(data): IGame {
+    private subscribeUpdates(game : IGame){
+        let gameRef : Firebase=  this.ref.child(game.key);
+
+        console.log('Gemaref: ', gameRef);
+
+        gameRef.on('value', this.listenUpdates.bind(this));
+    }
+
+    private listenUpdates(snapshot: FirebaseDataSnapshot): void {
+        console.log('UpdatedDataKey: ', snapshot.key());
+        console.log('UpdatedData: ', snapshot.val());
+
+        this._emitter._next(snapshot.val());
+        this._emitter.emit(snapshot.val());
+    }
+
+    private createGame(data): IGame {
 
         console.log('inside Set Cards');
         console.log(data);
@@ -77,10 +88,19 @@ export class GameService {
         console.log('Created Game');
         console.log(game);
 
-        this.createGame(game);
-
+        this.pushGame(game);
 
         return game;
+    }
+
+    pushGame(game: IGame) {
+        let newRef=  this.ref.push(game, (error: Error) => {
+            if (error) {
+                console.error('ERROR @ createGame :', error);
+            }
+        });
+
+        game.key = newRef.key();
     }
 
     private addCardsRandomly(articles: any[], cards: ICard[]) {
@@ -93,7 +113,7 @@ export class GameService {
         }
     };
 
-    shuffle(array) {
+    private shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
 
         // While there remain elements to shuffle...
@@ -112,11 +132,11 @@ export class GameService {
         return array;
     }
 
-    logError(err) {
+    private logError(err) : void {
         console.error('There was an error: ' + err);
     }
 
-    private  getUnfinishedGame(games: IGame[]) {
+    private getUnfinishedGame(games: IGame[]) : IGame{
 
         console.log('getUnfinishedGame');
         console.log(games);
