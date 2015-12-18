@@ -31,7 +31,7 @@
 
     <div class="row center-parent">
         <div class="btn-group btn-group-lg ">
-            <button *ngFor="#level of levels" type="button" class="btn btn-primary"
+            <button *ngFor="#level of levels" type="button" class="btn btn-primary col-lg-4 col-md-4 col-sm-4 col-xs-12"
                     (click)="selectLevel(level)" [ngClass]="{'active' : isLevelSelected(level)}">
                 {{level.name}} ({{level.pairs*2}} cards)
             </button>

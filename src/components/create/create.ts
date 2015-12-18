@@ -44,7 +44,7 @@ export class CreateGame {
         this.categories = ['Women','Men','Kids'];
         this.levels= [
             new Level(6, 'Easy'),
-            new Level(8, 'Medium'),
+            new Level(9, 'Fair'),
             new Level(12, 'Hard')
         ];
     }
