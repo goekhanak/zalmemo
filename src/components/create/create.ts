@@ -41,7 +41,7 @@ export class CreateGame {
     constructor(public gameService: GameService,  private router: Router) {
 
         // TODO get categories from shop api
-        this.categories = ['Women','Men','Kids'];
+        this.categories = ['women','men','kids'];
         this.levels= [
             new Level(6, 'Easy'),
             new Level(9, 'Fair'),
