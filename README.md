@@ -2,7 +2,7 @@
 
 
 # ZalMemo a social memory game with Zalando API.
-A simple Todo app example built with **Angular 2**. The app features a **Firebase** backend with **OAuth** authentication, and uses **<a href="https://github.com/zalando/shop-api-documentation" target="_blank">Zalando Shop API</a>**. 
+A simple Todo app example built with **Angular 2**. The app features a **Firebase** backend with **OAuth** authentication, and uses **<a href="https://github.com/zalando/shop-api-documentation" target="_blank">Zalando Shop API</a>**. It is built within Zalando hackweek 2015.
 
 Try out the live demo at <a href="https://crackling-inferno-6105.firebaseapp.com/" target="_blank">https://crackling-inferno-6105.firebaseapp.com</a>
 
@@ -23,6 +23,37 @@ Check out the <a href="https://github.com/r-park/todo-angular2-firebase" target=
   - Inlines external HTML templates
   - Bundles and minifies release builds
   - Injects style and script tags into index.html
+
+
+## Hackweek Schedule
+
+* First day
+  * Get Familiar with Angular 2
+    * go through tutorials and docs.
+  * Find a seed project with Angular 2, Typescript and Firebase
+    * <a href="https://github.com/r-park/todo-angular2-firebase" target="_blank">todo-angular2-firebase</a>
+  * Get familiar with shop API
+    * <a href="https://github.com/zalando/shop-api-documentation" target="_blank">Zalando Shop API</a>
+  * Design the first GUI
+* Second day
+  * Develop the UI
+    * Flip Cards with animations
+  * Get articles from Shop API
+* Third day
+  * Responsive UI
+  * Store the game @Firebase 
+    * https://www.youtube.com/watch?v=RD0xYicNcaY
+  * Improve random article choosing
+* Fourth day
+  * Real-time Synchronization among various clients with Firebase
+  * Choose game options like difficulty level and 
+* Fifth day
+  * Prepare for project fair
+  * Get feedback
+
+### Future Work
+* Turn based game against each other
+* Make clicking on cards will redirect to Zalando Shop more intuative
 
 
 ## Quick Start
