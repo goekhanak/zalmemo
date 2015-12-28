@@ -1,5 +1,5 @@
 import { Component } from 'angular2/core';
-import { RouteConfig, RouterOutlet } from 'angular2/router';
+import { RouteConfig, RouterOutlet, RouterLink } from 'angular2/router';
 import { AuthRouteHelper } from 'modules/auth/auth-route-helper';
 import { AuthService } from 'modules/auth/auth-service';
 import { SignIn } from '../sign-in/sign-in';
@@ -13,7 +13,8 @@ const template: string = require('./app.html');
 
 @Component({
   directives: [
-    RouterOutlet
+    RouterOutlet,
+    RouterLink
   ],
   selector: 'app',
   styles: [styles],
@@ -24,7 +25,7 @@ const template: string = require('./app.html');
   {path: '/', component: SignIn, as: 'SignIn'},
   {path: '/tasks', component: Tasks, as: 'Tasks'},
   {path: '/create', component: CreateGame, as: 'CreateGame'},
-  {path: '/cards', component: Cards, as: 'Cards'}
+  {path: '/cards/:key', component: Cards, as: 'Cards'}
 ])
 
 export class App {
@@ -40,4 +41,10 @@ export class App {
     this.auth.signOut();
     window.location.replace('/');
   }
+
+
+  navigateToMainScreen(): void {
+    window.location.replace('/');
+  }
+
 }

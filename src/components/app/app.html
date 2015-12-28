@@ -1,7 +1,9 @@
 <header class="header">
   <div class="g-row">
     <div class="g-col">
-      <h1 class="header__title">ZalMemo</h1>
+      <h1 class="header__title" (click)="navigateToMainScreen()" >ZalMemo</h1>
+
+      <!--<h1 class="header__title"  [routerLink]="['CreateGame']">ZalMemo</h1>-->
 
       <ul class="header__links">
         <li *ngIf="authenticated"><a class="header__link" (click)="signOut()" href="javascript:">Sign out</a></li>
