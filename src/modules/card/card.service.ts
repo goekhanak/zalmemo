@@ -12,7 +12,7 @@ export class CardService {
         // we can change Zalando Shop based on the language
         let options = new RequestOptions({
             headers: new Headers({ 'Accept-Language': 'en-EN',
-                'add' : 'zalmemo'
+                'x-client-name' : 'zalmemo'
             })
         });
         // configure category and number of random items to retrieve
