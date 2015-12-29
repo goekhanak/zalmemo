@@ -7,10 +7,10 @@ import { CardService } from './card.service'
 
 export const CARD_PROVIDERS: any[] = [
   provide(GameService, {
-    deps: [AuthService, CardService],
-    useFactory: (auth: AuthService, cardService: CardService): GameService => {
+    deps: [AuthService, CardService, AuthService],
+    useFactory: (auth: AuthService, cardService: CardService, authService): GameService => {
       let displayName:String  = auth.displayName;
-      return new GameService(new Firebase(`${FIREBASE_CARDS_URL}/${auth.id}-${displayName}`), cardService);
+      return new GameService(new Firebase(`${FIREBASE_CARDS_URL}`), cardService, authService);
     }
   })
 ];

@@ -69,7 +69,7 @@ export class AuthService {
     }
 
     let amOnline: Firebase = new Firebase(FIREBASE_AM_ONLINE);
-    let userRef: Firebase = new Firebase(FIREBASE_PRESENCE +  this.id + '-' + this.displayName);
+    let userRef: Firebase = new Firebase(FIREBASE_PRESENCE + this.userId);
 
     console.log('amOnline: ' , amOnline);
     console.log('userRef: ' , userRef);
@@ -85,6 +85,14 @@ export class AuthService {
         userRef.set(participant);
       }
     });
+  }
+
+  public get userId(){
+      return this.authenticated ? this.id + '-' + this.displayName : '';
+  }
+
+  public currentUser() : Participant{
+      return new Participant(this.id, this.displayName, this.profileImageURL);
   }
 
   private authWithOAuth(provider: string): Promise<any> {

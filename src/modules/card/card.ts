@@ -42,8 +42,8 @@ export interface IGame{
     firstPickId : string;
     secondPickId: string;
     flipCounter: number;
-    participants: string[];
     turn: string;
+    options: GameOptions;
 }
 
 export class Game implements IGame {
@@ -53,14 +53,16 @@ export class Game implements IGame {
     firstPickId : string;
     secondPickId: string;
     flipCounter: number;
-    participants: string[];
     turn: string;
+    options: GameOptions;
 
 
-    constructor(cards: ICard[], unmatchedPairs: number){
+    constructor(cards: ICard[], unmatchedPairs: number, options : GameOptions){
         this.cards = cards;
         this.unmatchedPairs = unmatchedPairs;
         this.flipCounter = 0;
+        this.options = options;
+        this.turn = options.participants[0].id;
     }
 }
 
@@ -71,16 +73,6 @@ export class Level{
     constructor(pairs : number, name: string){
         this.pairs = pairs;
         this.name = name;
-    }
-}
-
-export class GameOptions{
-    category: string;
-    level: Level;
-
-    constructor(category : string, level: Level){
-        this.category = category;
-        this.level = level;
     }
 }
 
@@ -95,3 +87,16 @@ export class Participant{
         this.profileImageURL = profileImageURL;
     }
 }
+
+export class GameOptions{
+    category: string;
+    level: Level;
+    participants: Participant[];
+
+    constructor(category : string, level: Level, participants: Participant[]){
+        this.category = category;
+        this.level = level;
+        this.participants = participants;
+    }
+}
+

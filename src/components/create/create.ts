@@ -9,6 +9,8 @@ import {IGame} from "../../modules/card/card";
 import {Level} from "../../modules/card/card";
 import {GameOptions} from "../../modules/card/card";
 import {Router} from "angular2/router";
+import {AuthService} from "../../modules/auth/auth-service";
+import {Participant} from "../../modules/card/card";
 
 
 const template: string = require('./create.html');
@@ -37,8 +39,10 @@ export class CreateGame {
     public selectedCategory: string;
     public levels: Level[];
     public selectedLevel: Level;
+    public opponentCandidates :Participant[];
+    public selectedOpponent: Participant;
 
-    constructor(public gameService: GameService,  private router: Router) {
+    constructor(public gameService: GameService,  private router: Router, private authService: AuthService) {
 
         // TODO get categories from shop api
         this.categories = ['women','men','kids'];
@@ -47,6 +51,16 @@ export class CreateGame {
             new Level(9, 'Fair'),
             new Level(12, 'Hard')
         ];
+
+        gameService.getGameOpponentCandidates().then((opponentCandidates: Participant[]) => {
+            console.log('opponentCandidates: ', opponentCandidates);
+            this.opponentCandidates = opponentCandidates;
+        });
+
+        this.gameService.opponentCandidates.subscribe((data: Participant[]) =>{
+            console.log('Inside gameService.opponentCandidates.subscribe: ', data);
+            this.opponentCandidates = data;
+        } );
     }
 
     public isCategorySelected(category: string) : boolean{
@@ -74,17 +88,26 @@ export class CreateGame {
             return;
         }
 
-        let gameOptions: GameOptions = new GameOptions(this.selectedCategory, this.selectedLevel);
+        let participants: Participant[] = [];
+        participants.push(this.authService.currentUser());
+
+        if(this.opponentCandidates.length > 0){
+
+            console.log('this.opponentCandidates', this.opponentCandidates);
+            console.log('this.opponentCandidates[0]', this.opponentCandidates[0]);
+
+            this.selectedOpponent = this.opponentCandidates[0];
+
+            participants.push(this.selectedOpponent);
+        }
+
+        let gameOptions: GameOptions = new GameOptions(this.selectedCategory, this.selectedLevel, participants);
         this.gameService.createNewGame(gameOptions).then(
             (game: IGame) =>{
-                // TODO use game id in the url
                 console.log('inside create game key:  ', game.key);
 
                 this.router.navigate(['/Cards', {key: game.key}]);
             }
         );
-
-
-        // TODO
     }
 }

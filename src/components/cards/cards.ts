@@ -35,8 +35,6 @@ const template: string = require('./cards.html');
 export class Cards {
     public game : IGame;
 
-    //@Input() gameSubject: ReplaySubject<IGame>;
-
 
     constructor(public gameService: GameService, params: RouteParams) {
 
@@ -70,16 +68,20 @@ export class Cards {
 
         for(let i= 0; i < this.game.cards.length && i < updatedGame.cards.length  ;i++){
             if(this.game.cards[i].flipped !== updatedGame.cards[i].flipped){
-                this.game.cards[i].flipped = updatedGame.cards[i].flipped
+                this.game.cards[i].flipped = updatedGame.cards[i].flipped;
             }
         }
 
         if(this.game.unmatchedPairs  !== updatedGame.unmatchedPairs){
-            this.game.unmatchedPairs  = updatedGame.unmatchedPairs
+            this.game.unmatchedPairs  = updatedGame.unmatchedPairs;
         }
 
         if(this.game.flipCounter  !== updatedGame.flipCounter){
-            this.game.flipCounter  = updatedGame.flipCounter
+            this.game.flipCounter  = updatedGame.flipCounter;
+        }
+
+        if(this.game.turn  !== updatedGame.turn){
+            this.game.turn  = updatedGame.turn;
         }
     }
 
@@ -98,14 +100,10 @@ export class Cards {
     }
 
 
-
-
     onDoubleClick(card:ICard){
 
         console.log('Double Click:' + card.id);
         console.log('this.gameSubject: ', this.gameService.game);
-
-
 
         if(this.game.unmatchedPairs === 0){
             window.open(card.shopUrl);
@@ -117,6 +115,11 @@ export class Cards {
 
         // ignore the flipped ones
         if (card.flipped) {
+            return;
+        }
+
+        // ignore if it is not current users turn
+        if(this.gameService.currentUserTurn(this.game) === false){
             return;
         }
 
@@ -155,10 +158,22 @@ export class Cards {
 
             } else { // no match
                 this.game.secondPickId = card.id;
+                this.nextParticipantsTurn();
             }
         }
 
         this.gameService.updateGame(this.game);
+    }
+
+    private nextParticipantsTurn() : void{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id !== this.game.turn){
+                this.game.turn = participant.id;
+                break;
+            }
+        }
     }
 
     private flip(card: ICard) {
