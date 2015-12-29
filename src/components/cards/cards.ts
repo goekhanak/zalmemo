@@ -10,6 +10,7 @@ import {Game} from "../../modules/card/card";
 import {IGame} from "../../modules/card/card";
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 import {Input} from "angular2/core";
+import {RouteParams} from "angular2/router";
 
 
 const styles: string = require('./cards.scss');
@@ -37,9 +38,13 @@ export class Cards {
     //@Input() gameSubject: ReplaySubject<IGame>;
 
 
-    constructor(  public gameService: GameService) {
+    constructor(public gameService: GameService, params: RouteParams) {
 
-        gameService.getGame().then((game: IGame) => {
+        console.log('params.get(key): ' , params.get('key'));
+
+        let gameKey = params.get('key');
+
+        gameService.getGame(gameKey).then((game: IGame) => {
             console.log('Promise resolved !');
             console.log(game);
             this.game = game;
@@ -47,7 +52,10 @@ export class Cards {
 
         this.gameService.game.subscribe((data: IGame) =>{
             console.log('Inside Subscribe: ', data);
-            this.updateView(data);
+
+            if(data){
+                this.updateView(data);
+            }
         } );
     }
 
@@ -61,7 +69,6 @@ export class Cards {
         }
 
         for(let i= 0; i < this.game.cards.length && i < updatedGame.cards.length  ;i++){
-            console.log('Inside card loop', updatedGame.cards[i]);
             if(this.game.cards[i].flipped !== updatedGame.cards[i].flipped){
                 this.game.cards[i].flipped = updatedGame.cards[i].flipped
             }
@@ -170,8 +177,6 @@ export class Cards {
                 card = this.game.cards[i];
             }
         }
-
-        console.error('No Card found for id ', cardId);
 
         return card;
     }

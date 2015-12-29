@@ -78,11 +78,13 @@ export class CreateGame {
         this.gameService.createNewGame(gameOptions).then(
             (game: IGame) =>{
                 // TODO use game id in the url
-                this.router.navigate(['/Cards']);
+                console.log('inside create game key:  ', game.key);
+
+                this.router.navigate(['/Cards', {key: game.key}]);
             }
         );
 
-        console.log('inside create game');
+
         // TODO
     }
 }

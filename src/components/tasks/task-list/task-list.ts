@@ -1,5 +1,4 @@
-import { NgFor } from 'angular2/common';
-import { Component, Input, View } from 'angular2/core';
+import { ChangeDetectionStrategy, Component, Input } from 'angular2/core';
 import { RouterLink, RouteParams } from 'angular2/router';
 import { List } from 'immutable';
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
@@ -11,18 +10,15 @@ const template: string = require('./task-list.html');
 
 
 @Component({
-  selector: 'task-list'
-})
-
-@View({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   directives: [
-    NgFor,
     RouterLink,
     TaskItem
   ],
   pipes: [
     TaskListFilterPipe
   ],
+  selector: 'task-list',
   styles: [styles],
   template
 })

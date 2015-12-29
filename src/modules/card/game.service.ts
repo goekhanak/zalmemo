@@ -12,6 +12,7 @@ import {Level} from "./card";
 export class GameService {
 
     game: ReplaySubject<IGame> = new ReplaySubject(1);
+    oldGameRef : Firebase;
 
     constructor(private ref: Firebase, private cardService: CardService) {
 
@@ -32,31 +33,18 @@ export class GameService {
         });
     }
 
-    public getGame(): Promise<any> {
-        console.log('Inside get game');
+    public getGame(key: string): Promise<any> {
+        console.log('Inside get game with key: ' ,key);
 
         return new Promise((resolve, reject) => {
 
             this.ref.once("value", (snapshot) => {
-                console.log(snapshot.val());
-                let unfinishedGame: IGame = this.getUnfinishedGame(snapshot.val());
-                if (unfinishedGame) {
-                    this.subscribeUpdates(unfinishedGame)
-                    resolve(unfinishedGame);
-                } else {
-                    let gameOptions = new GameOptions('kids', new Level(6,'Easy'))
-                    this.cardService.getCards(gameOptions).subscribe(
-                        data => {
-                            let game: IGame = this.generateGame(data);
-                            this.subscribeUpdates(game)
-                            resolve(game);
+                console.log('Games: ', snapshot.val());
 
-                        },
-                        err => {
-                            this.logError(err);
-                            reject(err);
-                        }
-                    );
+                let unfinishedGame: IGame = this.findGame(snapshot.val(), key);
+                if (unfinishedGame) {
+                    this.subscribeUpdates(unfinishedGame);
+                    resolve(unfinishedGame);
                 }
             }, function (err) {
                 console.log("The read failed: " , err.code);
@@ -74,13 +62,17 @@ export class GameService {
     }
 
     private subscribeUpdates(game : IGame){
-        let gameRef : Firebase=  this.ref.child(game.key);
 
-        console.log('Gemaref: ', gameRef);
+        console.log('subscribeUpdates:', this.oldGameRef);
 
+        if(this.oldGameRef){
+            this.oldGameRef.off('value', this.listenUpdates.bind(this));
+        }
+
+        let gameRef : Firebase = this.ref.child(game.key);
+        console.log('Gameref: ', gameRef);
         gameRef.on('value', this.listenUpdates.bind(this));
-
-
+        this.oldGameRef = gameRef;
     }
 
     private listenUpdates(snapshot: FirebaseDataSnapshot): void {
@@ -89,9 +81,6 @@ export class GameService {
 
         this.game.next(snapshot.val());
     }
-
-
-
 
     private generateGame(data): IGame {
 
@@ -160,21 +149,10 @@ export class GameService {
         console.error('There was an error: ' + err);
     }
 
-    private getUnfinishedGame(games: IGame[]) : IGame{
-
-        console.log('getUnfinishedGame');
-        console.log(games);
-
-        for (var key in games) {
-            if (games.hasOwnProperty(key)) {
-                console.log(key);
-                console.log(games[key]);
-                let game: IGame = games[key];
-                if (game.unmatchedPairs > 0) {
-                    game.key = key;
-                    return game;
-                }
-            }
+    private findGame(games: IGame[], key: string) : IGame {
+        if (games.hasOwnProperty(key)) {
+            games[key].key = key;
+            return  games[key];
         }
 
         return undefined;
