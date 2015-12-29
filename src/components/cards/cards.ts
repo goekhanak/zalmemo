@@ -44,7 +44,7 @@ export class Cards {
 
         let gameKey = params.get('key');
 
-        gameService.getGameNew(gameKey).then((game: IGame) => {
+        gameService.getGame(gameKey).then((game: IGame) => {
             console.log('Promise resolved !');
             console.log(game);
             this.game = game;

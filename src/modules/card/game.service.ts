@@ -33,7 +33,7 @@ export class GameService {
         });
     }
 
-    public getGameNew(key: string): Promise<any> {
+    public getGame(key: string): Promise<any> {
         console.log('Inside get game with key: ' ,key);
 
         return new Promise((resolve, reject) => {
@@ -52,39 +52,6 @@ export class GameService {
             });
         });
     }
-
-    //public getGame(): Promise<any> {
-    //    console.log('Inside get game');
-    //
-    //    return new Promise((resolve, reject) => {
-    //
-    //        this.ref.once("value", (snapshot) => {
-    //            console.log(snapshot.val());
-    //            let unfinishedGame: IGame = this.getUnfinishedGame(snapshot.val());
-    //            if (unfinishedGame) {
-    //                this.subscribeUpdates(unfinishedGame);
-    //                resolve(unfinishedGame);
-    //            } else {
-    //                let gameOptions = new GameOptions('kids', new Level(6,'Easy'))
-    //                this.cardService.getCards(gameOptions).subscribe(
-    //                    data => {
-    //                        let game: IGame = this.generateGame(data);
-    //                        this.subscribeUpdates(game)
-    //                        resolve(game);
-    //
-    //                    },
-    //                    err => {
-    //                        this.logError(err);
-    //                        reject(err);
-    //                    }
-    //                );
-    //            }
-    //        }, function (err) {
-    //            console.log("The read failed: " , err.code);
-    //            reject(err);
-    //        });
-    //    });
-    //}
 
     public updateGame(game: IGame){
         this.ref.child(game.key).update(game, (error: Error) => {
@@ -195,24 +162,4 @@ export class GameService {
 
         return undefined;
     }
-
-    //private getUnfinishedGame(games: IGame[]) : IGame{
-    //
-    //    console.log('getUnfinishedGame');
-    //    console.log(games);
-    //
-    //    for (var key in games) {
-    //        if (games.hasOwnProperty(key)) {
-    //            console.log(key);
-    //            console.log(games[key]);
-    //            let game: IGame = games[key];
-    //            if (game.unmatchedPairs > 0) {
-    //                game.key = key;
-    //                return game;
-    //            }
-    //        }
-    //    }
-    //
-    //    return undefined;
-    //}
 }
