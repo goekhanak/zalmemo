@@ -11,6 +11,7 @@ import {IGame} from "../../modules/card/card";
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 import {Input} from "angular2/core";
 import {RouteParams} from "angular2/router";
+import {Participant} from "../../modules/card/card";
 
 
 const styles: string = require('./cards.scss');
@@ -103,6 +104,10 @@ export class Cards {
         }
 
         return card.id !== this.game.firstPickId && card.id !== this.game.secondPickId ? true : false;
+    }
+
+    isCurrentUserTurn(participant: Participant): boolean{
+        return participant.id === this.game.turn;
     }
 
 
