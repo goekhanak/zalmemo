@@ -80,6 +80,7 @@ export class Participant{
     id: string;
     displayName: string;
     profileImageURL: string;
+    score: number;
 
     constructor(id : string, displayName: string, profileImageURL: string){
         this.id = id;

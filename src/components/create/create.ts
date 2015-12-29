@@ -89,7 +89,10 @@ export class CreateGame {
         }
 
         let participants: Participant[] = [];
-        participants.push(this.authService.currentUser());
+        let currentUser: Participant = this.authService.currentUser();
+        currentUser.score = 0;
+
+        participants.push(currentUser);
 
         if(this.opponentCandidates.length > 0){
 
@@ -97,6 +100,7 @@ export class CreateGame {
             console.log('this.opponentCandidates[0]', this.opponentCandidates[0]);
 
             this.selectedOpponent = this.opponentCandidates[0];
+            this.selectedOpponent.score = 0;
 
             participants.push(this.selectedOpponent);
         }

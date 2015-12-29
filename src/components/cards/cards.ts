@@ -83,6 +83,12 @@ export class Cards {
         if(this.game.turn  !== updatedGame.turn){
             this.game.turn  = updatedGame.turn;
         }
+
+        for(let i= 0; i < this.game.options.participants.length ;i++){
+            if(this.game.options.participants[i].score !== updatedGame.options.participants[i].score){
+                this.game.options.participants[i].score = updatedGame.options.participants[i].score;
+            }
+        }
     }
 
     logError(err) {
@@ -148,6 +154,7 @@ export class Cards {
             // Do we have a match
             if (firstPick.configSku === card.configSku) {
                 this.game.unmatchedPairs--;
+                this.incrementScore();
                 this.game.firstPickId = this.game.secondPickId = '';
 
                 // game over
@@ -163,6 +170,18 @@ export class Cards {
         }
 
         this.gameService.updateGame(this.game);
+    }
+
+
+    private incrementScore() : void{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.game.turn){
+                participant.score++;
+                break;
+            }
+        }
     }
 
     private nextParticipantsTurn() : void{

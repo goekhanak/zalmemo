@@ -100,7 +100,7 @@ export class GameService {
     }
 
     public currentUserTurn(game: IGame): boolean{
-        return this.authService.id !== game.turn;
+        return this.authService.id === game.turn;
     }
 
     public updateGame(game: IGame){
