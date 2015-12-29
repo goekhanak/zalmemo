@@ -150,11 +150,6 @@ export class GameService {
     }
 
     private findGame(games: IGame[], key: string) : IGame {
-
-        console.log('Find game with key: ', key);
-        console.log('from games: ', games);
-        console.log('games[key]: ' , games[key]);
-
         if (games.hasOwnProperty(key)) {
             games[key].key = key;
             return  games[key];
