@@ -11,7 +11,7 @@
 
     <div class="row" *ngIf="game">
         <div *ngFor="#participant of game.options.participants" class="pull-right col-lg-1 col-md-2 col-sm-4 col-xs-4" >
-            <img class="img-rounded img-thumbnail " [ngClass]="{'opacity' : isCurrentUserTurn(participant)}"  src='{{participant.profileImageURL}}'>
+            <img class="img-rounded img-thumbnail pull-right" [ngClass]="{'opacity' : isCurrentUserTurn(participant)}"  src='{{participant.profileImageURL}}' >
             <span>{{participant.score}}</span>
         </div>
     </div>
