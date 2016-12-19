@@ -66,7 +66,6 @@ export class Cards {
             this.router.navigate(['/']);
         } else {
             console.log('Adding new participant to the game: ', this.currentUser);
-            this.currentUser.score = 0;
             this.game.options.participants.push(this.currentUser);
             this.gameService.updateGame(this.game);
         }

@@ -85,6 +85,8 @@ export class Participant{
         this.displayName = displayName;
         this.profileImageURL = profileImageURL;
         this.flipCounter = 0;
+        this.score = 0;
+
     }
 }
 
