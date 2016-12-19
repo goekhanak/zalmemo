@@ -11,7 +11,7 @@ export class CardService {
     public getCards(gameOptions: GameOptions) {
         // we can change Zalando Shop based on the language
         let options = new RequestOptions({
-            headers: new Headers({ 'Accept-Language': 'en-EN',
+            headers: new Headers({ 'Accept-Language': 'de-DE',
                 'x-client-name' : 'zalmemo'
             })
         });
