@@ -125,7 +125,6 @@ export class Cards {
         console.error('There was an error: ' + err);
     }
 
-
     isCardRevealed(card: ICard){
 
         if(this.game.unmatchedPairs === 0){

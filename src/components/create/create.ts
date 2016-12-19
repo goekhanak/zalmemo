@@ -47,7 +47,7 @@ export class CreateGame {
     constructor(public gameService: GameService, private router: Router, private authService: AuthService) {
 
         // TODO get categories from shop api
-        this.categories = ['women', 'men', 'kids'];
+        this.categories = ['Women', 'Men', 'Kids'];
         this.levels = [
             new Level(6, 'Easy'),
             new Level(9, 'Fair'),
@@ -82,7 +82,7 @@ export class CreateGame {
     }
 
     public gameOptionsChosen(): boolean {
-        return this.selectedCategory !== undefined && this.selectedLevel !== undefined;
+        return this.selectedCategory !== undefined && this.selectedLevel !== undefined && this.selectedGameType !== undefined;
     }
 
     public createGame(): void {
@@ -99,7 +99,7 @@ export class CreateGame {
 
         let gameType: GameType = this.selectedGameType == this.gameTypes[0] ? GameType.SINGLE : GameType.MULTIPLAYER;
 
-        let gameOptions: GameOptions = new GameOptions(this.selectedCategory, this.selectedLevel, participants, gameType);
+        let gameOptions: GameOptions = new GameOptions(this.getSelectedCategoryId(), this.selectedLevel, participants, gameType);
         this.gameService.createNewGame(gameOptions).then(
             (game: IGame) => {
                 console.log('inside create game key:  ', game.key);
@@ -107,5 +107,17 @@ export class CreateGame {
                 this.router.navigate(['/Cards', {key: game.key}]);
             }
         );
+    }
+
+    public getSelectedCategoryId() {
+        switch (this.selectedCategory) {
+            case 'Women':
+                return 'damen';
+            case 'Men':
+                return 'herren';
+            case 'Kids':
+                return 'kinder';
+        }
+        console.error('No category id found for: ' + this.selectedCategory);
     }
 }
