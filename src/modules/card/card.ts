@@ -56,7 +56,6 @@ export class Game implements IGame {
     turn: string;
     options: GameOptions;
 
-
     constructor(cards: ICard[], unmatchedPairs: number, options : GameOptions){
         this.cards = cards;
         this.unmatchedPairs = unmatchedPairs;
@@ -92,12 +91,20 @@ export class Participant{
 export class GameOptions{
     category: string;
     level: Level;
+    gameType: GameType;
+
     participants: Participant[];
 
-    constructor(category : string, level: Level, participants: Participant[]){
+    constructor(category : string, level: Level, participants: Participant[], gameType: GameType){
         this.category = category;
         this.level = level;
         this.participants = participants;
+        this.gameType =  gameType;
     }
+}
+
+export enum GameType{
+    SINGLE,
+    MULTIPLAYER
 }
 

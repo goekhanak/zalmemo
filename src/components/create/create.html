@@ -39,6 +39,25 @@
     </div>
 
 
+    <br>
+
+    <div class="row center-parent">
+        <h3>Game Type</h3>
+    </div>
+
+    <br>
+
+
+    <div class="row center-parent">
+        <div class="btn-group btn-group-lg ">
+            <button *ngFor="#gameType of gameTypes" type="button" class="btn btn-primary"
+                    (click)="selectType(gameType)" [ngClass]="{'active' : isTypeSelected(gameType)}">
+                {{gameType}}
+            </button>
+        </div>
+    </div>
+
+
     <br><br>
 
     <div class="row center-parent">

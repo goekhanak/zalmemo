@@ -12,6 +12,8 @@ import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 import {Input} from "angular2/core";
 import {RouteParams} from "angular2/router";
 import {Participant} from "../../modules/card/card";
+import {Router} from "angular2/src/router/router";
+import {AuthService} from "../../modules/auth/auth-service";
 
 
 const styles: string = require('./cards.scss');
@@ -35,11 +37,14 @@ const template: string = require('./cards.html');
 
 export class Cards {
     public game : IGame;
+    public currentUser: Participant;
 
 
-    constructor(public gameService: GameService, params: RouteParams) {
+    constructor(public gameService: GameService, params: RouteParams, private router: Router, private authService: AuthService) {
 
         console.log('params.get(key): ' , params.get('key'));
+
+        this.currentUser = this.authService.currentUser();
 
         let gameKey = params.get('key');
 
@@ -47,15 +52,32 @@ export class Cards {
             console.log('Promise resolved !');
             console.log(game);
             this.game = game;
+            this.joinGame();
         });
+    }
 
-        this.gameService.game.subscribe((data: IGame) =>{
+    private joinGame() {
+        if (this.isCurrentUserAlreadyInParticipants()) {
+            console.log('Current user is already among participants: ', this.currentUser);
+
+        } else if (this.game.options.participants.length > 1) {
+            // TODO show warning
+            console.log('There are already enough pariticipants: ', this.currentUser);
+            this.router.navigate(['/']);
+        } else {
+            console.log('Adding new participant to the game: ', this.currentUser);
+            this.currentUser.score = 0;
+            this.game.options.participants.push(this.currentUser);
+            this.gameService.updateGame(this.game);
+        }
+
+        this.gameService.game.subscribe((data: IGame) => {
             console.log('Inside Subscribe: ', data);
 
-            if(data){
+            if (data) {
                 this.updateView(data);
             }
-        } );
+        });
     }
 
     updateView(updatedGame: IGame) : void {
@@ -85,7 +107,16 @@ export class Cards {
             this.game.turn  = updatedGame.turn;
         }
 
-        for(let i= 0; i < this.game.options.participants.length ;i++){
+
+
+
+        for(let i= 0; i < updatedGame.options.participants.length ;i++){
+
+            // new participant
+            if(!this.game.options.participants[i]){
+                this.game.options.participants.push(updatedGame.options.participants[i]);
+            }
+
             if(this.game.options.participants[i].score !== updatedGame.options.participants[i].score){
                 this.game.options.participants[i].score = updatedGame.options.participants[i].score;
             }
@@ -218,5 +249,17 @@ export class Cards {
         }
 
         return card;
+    }
+
+    private isCurrentUserAlreadyInParticipants() : boolean{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.currentUser.id){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
