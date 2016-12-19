@@ -99,10 +99,6 @@ export class GameService {
         });
     }
 
-    public currentUserTurn(game: IGame): boolean{
-        return this.authService.id === game.turn;
-    }
-
     public updateGame(game: IGame){
         this.ref.child(game.key).update(game, (error: Error) => {
             if (error) {

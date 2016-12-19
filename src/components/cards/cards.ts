@@ -4,7 +4,7 @@ import { AuthRouteHelper } from '../../modules/auth/auth-route-helper';
 import { CardService } from '../../modules/card/card.service';
 import { GameService } from '../../modules/card/game.service';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
-import { ICard } from  '../../modules/card/card'
+import {ICard, GameType} from  '../../modules/card/card'
 import {Card} from "../../modules/card/card";
 import {Game} from "../../modules/card/card";
 import {IGame} from "../../modules/card/card";
@@ -99,15 +99,10 @@ export class Cards {
             this.game.unmatchedPairs  = updatedGame.unmatchedPairs;
         }
 
-        if(this.game.flipCounter  !== updatedGame.flipCounter){
-            this.game.flipCounter  = updatedGame.flipCounter;
-        }
 
         if(this.game.turn  !== updatedGame.turn){
             this.game.turn  = updatedGame.turn;
         }
-
-
 
 
         for(let i= 0; i < updatedGame.options.participants.length ;i++){
@@ -119,6 +114,10 @@ export class Cards {
 
             if(this.game.options.participants[i].score !== updatedGame.options.participants[i].score){
                 this.game.options.participants[i].score = updatedGame.options.participants[i].score;
+            }
+
+            if(this.game.options.participants[i].flipCounter  !== updatedGame.options.participants[i].flipCounter){
+                this.game.options.participants[i].flipCounter = updatedGame.options.participants[i].flipCounter;
             }
         }
     }
@@ -149,7 +148,11 @@ export class Cards {
         console.log('Double Click:' + card.id);
         console.log('this.gameSubject: ', this.gameService.game);
 
-        if(this.game.unmatchedPairs === 0){
+        this.DisplayArticleInNewTab(card);
+    }
+
+    private DisplayArticleInNewTab(card: ICard) {
+        if (this.game.unmatchedPairs === 0) {
             window.open(card.shopUrl);
         }
     }
@@ -157,19 +160,20 @@ export class Cards {
     pickCard(card:ICard){
         console.log('Flip Card:' + card.id);
 
+        this.DisplayArticleInNewTab(card);
+
         // ignore the flipped ones
         if (card.flipped) {
             return;
         }
 
         // ignore if it is not current users turn
-        if(this.gameService.currentUserTurn(this.game) === false){
+        if(this.currentUser.id !== this.game.turn){
             return;
         }
 
         this.flip(card);
-
-        this.game.flipCounter++;
+        this.incrementFlipCounter();
 
         let firstPick: ICard = this.getCardForId(this.game.firstPickId);
         let secondPick: ICard = this.getCardForId(this.game.secondPickId);
@@ -197,8 +201,13 @@ export class Cards {
 
                 // game over
                 if(this.game.unmatchedPairs === 0){
-                    alert('Congratulations you revealed all cards in ' + this.game.flipCounter/2+' attempts! ' +
-                        '\n You can double click on any article to display at Zalando shop.')
+                    if(this.game.options.gameType === GameType.SINGLE){
+                        alert('Congratulations you revealed all cards in ' + this.getCurrentFlipCounter()/2+' attempts! ' +
+                            '\n You can click on any article to display at Zalando shop.');
+                    }else {
+                        alert(this.getWinnersName() + ' won the game !' +
+                            '\n You can click on any article to display at Zalando shop.')
+                    }
                 }
 
             } else { // no match
@@ -210,6 +219,26 @@ export class Cards {
         this.gameService.updateGame(this.game);
     }
 
+    private incrementFlipCounter() : void {
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.game.turn){
+                participant.flipCounter++;
+                break;
+            }
+        }
+    }
+
+    private getCurrentFlipCounter() : number {
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.currentUser.id){
+                return participant.flipCounter;
+            }
+        }
+    }
 
     private incrementScore() : void{
         for(let i = 0; i < this.game.options.participants.length; i++){
@@ -263,5 +292,19 @@ export class Cards {
         }
 
         return false;
+    }
+
+    private getWinnersName() : string{
+        let winner: Participant;
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+           if(!winner || participant.score > winner.score){
+               winner = participant;
+           }
+        }
+
+        return winner.id === this.currentUser.id ?  'You' : winner.displayName;
+
     }
 }
