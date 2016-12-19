@@ -137,7 +137,9 @@ export class Cards {
         return card.id !== this.game.firstPickId && card.id !== this.game.secondPickId ? true : false;
     }
 
-    isCurrentUserTurn(participant: Participant): boolean{
+    isThisUserTurn(participant: Participant): boolean{
+        console.log('isThisUserTurn: ' , participant);
+
         return participant.id === this.game.turn;
     }
 
