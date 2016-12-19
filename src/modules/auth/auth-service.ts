@@ -1,4 +1,7 @@
 import { EventEmitter } from 'angular2/core';
+import { FIREBASE_AM_ONLINE } from '../../config';
+import { FIREBASE_PRESENCE } from '../../config';
+import {Participant} from "../card/card";
 
 
 export class AuthService {
@@ -10,6 +13,7 @@ export class AuthService {
 
     this.ref.onAuth((authData: FirebaseAuthData) => {
       this.authData = authData;
+      this.presence();
       this.emit();
     });
   }
@@ -25,6 +29,16 @@ export class AuthService {
   get id(): string {
     return this.authenticated ? this.authData.uid : '';
   }
+
+  get displayName(): string {
+    return this.authenticated ? this.authData[this.authData.provider].displayName : '';
+  }
+
+
+  get profileImageURL(): string {
+    return this.authenticated ? this.authData[this.authData.provider].profileImageURL : '';
+  }
+
 
   signInWithGithub(): Promise<any> {
     return this.authWithOAuth('github');
@@ -46,6 +60,39 @@ export class AuthService {
     let subscription = this.emitter.subscribe(next);
     this.emit();
     return subscription;
+  }
+
+  private presence(): void {
+
+    if(!this.authenticated){
+      return;
+    }
+
+    let amOnline: Firebase = new Firebase(FIREBASE_AM_ONLINE);
+    let userRef: Firebase = new Firebase(FIREBASE_PRESENCE + this.userId);
+
+    console.log('amOnline: ' , amOnline);
+    console.log('userRef: ' , userRef);
+
+    amOnline.on('value', (snapshot) => {
+      if (snapshot.val()) {
+        userRef.onDisconnect().remove();
+
+
+        let participant = new Participant(this.id, this.displayName, this.profileImageURL);
+        console.log('Current participant: ', participant);
+
+        userRef.set(participant);
+      }
+    });
+  }
+
+  public get userId(){
+      return this.authenticated ? this.id + '-' + this.displayName : '';
+  }
+
+  public currentUser() : Participant{
+      return new Participant(this.id, this.displayName, this.profileImageURL);
   }
 
   private authWithOAuth(provider: string): Promise<any> {

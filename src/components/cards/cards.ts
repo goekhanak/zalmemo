@@ -4,13 +4,16 @@ import { AuthRouteHelper } from '../../modules/auth/auth-route-helper';
 import { CardService } from '../../modules/card/card.service';
 import { GameService } from '../../modules/card/game.service';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
-import { ICard } from  '../../modules/card/card'
+import {ICard, GameType} from  '../../modules/card/card'
 import {Card} from "../../modules/card/card";
 import {Game} from "../../modules/card/card";
 import {IGame} from "../../modules/card/card";
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 import {Input} from "angular2/core";
 import {RouteParams} from "angular2/router";
+import {Participant} from "../../modules/card/card";
+import {Router} from "angular2/src/router/router";
+import {AuthService} from "../../modules/auth/auth-service";
 
 
 const styles: string = require('./cards.scss');
@@ -34,13 +37,14 @@ const template: string = require('./cards.html');
 
 export class Cards {
     public game : IGame;
+    public currentUser: Participant;
 
-    //@Input() gameSubject: ReplaySubject<IGame>;
 
-
-    constructor(public gameService: GameService, params: RouteParams) {
+    constructor(public gameService: GameService, params: RouteParams, private router: Router, private authService: AuthService) {
 
         console.log('params.get(key): ' , params.get('key'));
+
+        this.currentUser = this.authService.currentUser();
 
         let gameKey = params.get('key');
 
@@ -48,15 +52,31 @@ export class Cards {
             console.log('Promise resolved !');
             console.log(game);
             this.game = game;
+            this.joinGame();
         });
+    }
 
-        this.gameService.game.subscribe((data: IGame) =>{
+    private joinGame() {
+        if (this.isCurrentUserAlreadyInParticipants()) {
+            console.log('Current user is already among participants: ', this.currentUser);
+
+        } else if (this.game.options.participants.length > 1) {
+            // TODO show warning
+            console.log('There are already enough pariticipants: ', this.currentUser);
+            this.router.navigate(['/']);
+        } else {
+            console.log('Adding new participant to the game: ', this.currentUser);
+            this.game.options.participants.push(this.currentUser);
+            this.gameService.updateGame(this.game);
+        }
+
+        this.gameService.game.subscribe((data: IGame) => {
             console.log('Inside Subscribe: ', data);
 
-            if(data){
+            if (data) {
                 this.updateView(data);
             }
-        } );
+        });
     }
 
     updateView(updatedGame: IGame) : void {
@@ -70,16 +90,34 @@ export class Cards {
 
         for(let i= 0; i < this.game.cards.length && i < updatedGame.cards.length  ;i++){
             if(this.game.cards[i].flipped !== updatedGame.cards[i].flipped){
-                this.game.cards[i].flipped = updatedGame.cards[i].flipped
+                this.game.cards[i].flipped = updatedGame.cards[i].flipped;
             }
         }
 
         if(this.game.unmatchedPairs  !== updatedGame.unmatchedPairs){
-            this.game.unmatchedPairs  = updatedGame.unmatchedPairs
+            this.game.unmatchedPairs  = updatedGame.unmatchedPairs;
         }
 
-        if(this.game.flipCounter  !== updatedGame.flipCounter){
-            this.game.flipCounter  = updatedGame.flipCounter
+
+        if(this.game.turn  !== updatedGame.turn){
+            this.game.turn  = updatedGame.turn;
+        }
+
+
+        for(let i= 0; i < updatedGame.options.participants.length ;i++){
+
+            // new participant
+            if(!this.game.options.participants[i]){
+                this.game.options.participants.push(updatedGame.options.participants[i]);
+            }
+
+            if(this.game.options.participants[i].score !== updatedGame.options.participants[i].score){
+                this.game.options.participants[i].score = updatedGame.options.participants[i].score;
+            }
+
+            if(this.game.options.participants[i].flipCounter  !== updatedGame.options.participants[i].flipCounter){
+                this.game.options.participants[i].flipCounter = updatedGame.options.participants[i].flipCounter;
+            }
         }
     }
 
@@ -97,7 +135,11 @@ export class Cards {
         return card.id !== this.game.firstPickId && card.id !== this.game.secondPickId ? true : false;
     }
 
+    isThisUserTurn(participant: Participant): boolean{
+        console.log('isThisUserTurn: ' , participant);
 
+        return participant.id === this.game.turn;
+    }
 
 
     onDoubleClick(card:ICard){
@@ -105,9 +147,11 @@ export class Cards {
         console.log('Double Click:' + card.id);
         console.log('this.gameSubject: ', this.gameService.game);
 
+        this.DisplayArticleInNewTab(card);
+    }
 
-
-        if(this.game.unmatchedPairs === 0){
+    private DisplayArticleInNewTab(card: ICard) {
+        if (this.game.unmatchedPairs === 0) {
             window.open(card.shopUrl);
         }
     }
@@ -115,14 +159,20 @@ export class Cards {
     pickCard(card:ICard){
         console.log('Flip Card:' + card.id);
 
+        this.DisplayArticleInNewTab(card);
+
         // ignore the flipped ones
         if (card.flipped) {
             return;
         }
 
-        this.flip(card);
+        // ignore if it is not current users turn
+        if(this.currentUser.id !== this.game.turn){
+            return;
+        }
 
-        this.game.flipCounter++;
+        this.flip(card);
+        this.incrementFlipCounter();
 
         let firstPick: ICard = this.getCardForId(this.game.firstPickId);
         let secondPick: ICard = this.getCardForId(this.game.secondPickId);
@@ -145,20 +195,70 @@ export class Cards {
             // Do we have a match
             if (firstPick.configSku === card.configSku) {
                 this.game.unmatchedPairs--;
+                this.incrementScore();
                 this.game.firstPickId = this.game.secondPickId = '';
 
                 // game over
                 if(this.game.unmatchedPairs === 0){
-                    alert('Congratulations you revealed all cards in ' + this.game.flipCounter/2+' attempts! ' +
-                        '\n You can double click on any article to display at Zalando shop.')
+                    if(this.game.options.gameType === GameType.SINGLE){
+                        alert('Congratulations you revealed all cards in ' + this.getCurrentFlipCounter()/2+' attempts! ' +
+                            '\n You can click on any article to display at Zalando shop.');
+                    }else {
+                        alert(this.getWinnersName() + ' won the game !' +
+                            '\n You can click on any article to display at Zalando shop.')
+                    }
                 }
 
             } else { // no match
                 this.game.secondPickId = card.id;
+                this.nextParticipantsTurn();
             }
         }
 
         this.gameService.updateGame(this.game);
+    }
+
+    private incrementFlipCounter() : void {
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.game.turn){
+                participant.flipCounter++;
+                break;
+            }
+        }
+    }
+
+    private getCurrentFlipCounter() : number {
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.currentUser.id){
+                return participant.flipCounter;
+            }
+        }
+    }
+
+    private incrementScore() : void{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.game.turn){
+                participant.score++;
+                break;
+            }
+        }
+    }
+
+    private nextParticipantsTurn() : void{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id !== this.game.turn){
+                this.game.turn = participant.id;
+                break;
+            }
+        }
     }
 
     private flip(card: ICard) {
@@ -179,5 +279,31 @@ export class Cards {
         }
 
         return card;
+    }
+
+    private isCurrentUserAlreadyInParticipants() : boolean{
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+            if(participant.id === this.currentUser.id){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private getWinnersName() : string{
+        let winner: Participant;
+        for(let i = 0; i < this.game.options.participants.length; i++){
+            let participant = this.game.options.participants[i];
+
+           if(!winner || participant.score > winner.score){
+               winner = participant;
+           }
+        }
+
+        return winner.id === this.currentUser.id ?  'You' : winner.displayName;
+
     }
 }
