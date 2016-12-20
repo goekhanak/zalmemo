@@ -49,7 +49,7 @@ export class Cards {
         let gameKey = params.get('key');
 
         gameService.getGame(gameKey).then((game: IGame) => {
-            console.log('Promise resolved !');
+            console.log('Get Game Promise resolved !');
             console.log(game);
             this.game = game;
             this.joinGame();
@@ -135,16 +135,12 @@ export class Cards {
     }
 
     isThisUserTurn(participant: Participant): boolean{
-        console.log('isThisUserTurn: ' , participant);
-
         return participant.id === this.game.turn;
     }
 
 
     onDoubleClick(card:ICard){
-
         console.log('Double Click:' + card.id);
-        console.log('this.gameSubject: ', this.gameService.game);
 
         this.DisplayArticleInNewTab(card);
     }

@@ -1,9 +1,9 @@
-import { IGame } from './card'
-import { CardService} from './card.service'
+import {IGame, GameType} from './card'
+import {CardService} from './card.service'
 import {ICard} from "./card";
 import {Card} from "./card";
 import {Game} from "./card";
-import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
+import {ReplaySubject} from 'rxjs/subject/ReplaySubject';
 import {GameOptions} from "./card";
 import {LegacyHtmlParser} from "angular2/src/compiler/legacy_template";
 import {Level} from "./card";
@@ -16,14 +16,28 @@ export class GameService {
 
     game: ReplaySubject<IGame> = new ReplaySubject(1);
     opponentCandidates: ReplaySubject<Participant[]> = new ReplaySubject(1);
-    oldGameRef : Firebase;
-    participantsRef : Firebase;
+    oldGameRef: Firebase;
+    participantsRef: Firebase;
 
     constructor(private ref: Firebase, private cardService: CardService, private authService: AuthService) {
         this.participantsRef = new Firebase(FIREBASE_PRESENCE);
     }
 
-    public getGameOpponentCandidates() : Promise< Participant[]>{
+
+    public getMultiplayerGames(): Promise<Game[]> {
+
+        return new Promise((resolve, reject) => {
+            this.ref.orderByChild('unmatchedPairs').startAt(1).once("value", (snapshot) => {
+                console.log("Uncompleted games: ", snapshot.val());
+                resolve(this.filterGamesWithPresences(snapshot.val()));
+            }, function (err) {
+                console.log('The read failed: ', err.code);
+                reject(err);
+            });
+        });
+    }
+
+    public getGameOpponentCandidates(): Promise< Participant[]> {
 
         return new Promise((resolve, reject) => {
 
@@ -33,7 +47,7 @@ export class GameService {
                 this.subscribeParticipantUpdates();
                 resolve(this.filterOpponentParticipants(presences));
             }, function (err) {
-                console.log("The read failed: " , err.code);
+                console.log('The read failed: ', err.code);
                 reject(err);
             });
         });
@@ -53,7 +67,7 @@ export class GameService {
         return opponentCandidates;
     };
 
-    private subscribeParticipantUpdates(){
+    private subscribeParticipantUpdates() {
         this.participantsRef.on('value', this.listenParticipantUpdates.bind(this));
     }
 
@@ -64,7 +78,7 @@ export class GameService {
         this.opponentCandidates.next(this.filterOpponentParticipants(snapshot.val()));
     }
 
-    public createNewGame(gameOptions: GameOptions){
+    public createNewGame(gameOptions: GameOptions) {
         return new Promise((resolve, reject) => {
             this.cardService.getCards(gameOptions).subscribe(
                 data => {
@@ -80,26 +94,36 @@ export class GameService {
     }
 
     public getGame(key: string): Promise<any> {
-        console.log('Inside get game with key: ' ,key);
+        console.log('Inside get game with key: ', key);
+
+        console.log('this.ref.key(): ', this.ref.key());
+
+        let gameRef: Firebase = this.ref.child(key);
+
+        console.log('gameRef.key(): ', gameRef.key());
+        console.log('this.ref.key(): ', this.ref.key());
 
         return new Promise((resolve, reject) => {
 
-            this.ref.once("value", (snapshot) => {
-                console.log('Games: ', snapshot.val());
+            gameRef.once("value", (snapshot) => {
+                console.log('Current Game: ', snapshot.val());
 
-                let unfinishedGame: IGame = this.findGame(snapshot.val(), key);
+                let unfinishedGame: IGame = snapshot.val();
                 if (unfinishedGame) {
+                    //  for easy identification
+                    unfinishedGame.key = key;
                     this.subscribeGameUpdates(unfinishedGame);
                     resolve(unfinishedGame);
                 }
             }, function (err) {
-                console.log("The read failed: " , err.code);
+                console.log("The read failed: ", err.code);
                 reject(err);
             });
         });
     }
 
-    public updateGame(game: IGame){
+
+    public updateGame(game: IGame) {
         this.ref.child(game.key).update(game, (error: Error) => {
             if (error) {
                 console.error('ERROR @ updateGame :', error);
@@ -107,15 +131,15 @@ export class GameService {
         });
     }
 
-    private subscribeGameUpdates(game : IGame){
+    private subscribeGameUpdates(game: IGame) {
 
         console.log('subscribeUpdates:', this.oldGameRef);
 
-        if(this.oldGameRef){
+        if (this.oldGameRef) {
             this.oldGameRef.off('value', this.listenGameUpdates.bind(this));
         }
 
-        let gameRef : Firebase = this.ref.child(game.key);
+        let gameRef: Firebase = this.ref.child(game.key);
         console.log('Gameref: ', gameRef);
         gameRef.on('value', this.listenGameUpdates.bind(this));
         this.oldGameRef = gameRef;
@@ -133,7 +157,6 @@ export class GameService {
         console.log('inside Set Cards');
         console.log(data);
         console.log('gameOptions', gameOptions);
-
 
 
         let articles: any[] = data.content;
@@ -155,7 +178,7 @@ export class GameService {
     }
 
     pushGame(game: IGame) {
-        let newRef=  this.ref.push(game, (error: Error) => {
+        let newRef = this.ref.push(game, (error: Error) => {
             if (error) {
                 console.error('ERROR @ createGame :', error);
             }
@@ -193,16 +216,55 @@ export class GameService {
         return array;
     }
 
-    private logError(err) : void {
+    private logError(err): void {
         console.error('There was an error: ' + err);
     }
 
-    private findGame(games: IGame[], key: string) : IGame {
+    private findGame(games: IGame[], key: string): IGame {
         if (games.hasOwnProperty(key)) {
             games[key].key = key;
-            return  games[key];
+            return games[key];
         }
 
         return undefined;
+    }
+
+    private filterGamesWithPresences(uncompletedGames: any) :IGame[] {
+
+        let filteredGames : IGame[] = [];
+
+        for (var key in uncompletedGames) {
+            let game : IGame = uncompletedGames[key];
+
+            // if(!game.key){
+            //     console.log('Deleting game: !!', key);
+            //     let deleteRef = this.ref.child(key);
+            //     deleteRef.remove();
+            // }
+
+            // if(!game.created){
+            //     console.log('Deleting game which does not have created!!', key);
+            //     let deleteRef = this.ref.child(key);
+            //     deleteRef.remove();
+            // }
+
+            // if(!game.options.gameType || game.options.gameType === GameType.SINGLE){
+            //     console.log('Deleting game which does not have gameType!!', key);
+            //     let deleteRef = this.ref.child(key);
+            //     deleteRef.remove();
+            // }
+
+            game.key = key;
+
+            if(game.created){
+                game.created = new Date(game.created);
+            }
+
+            if(game.options.gameType && game.options.gameType === GameType.MULTIPLAYER){
+                filteredGames.push(game);
+            }
+        }
+
+        return filteredGames;
     }
 }
