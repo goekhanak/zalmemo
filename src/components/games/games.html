@@ -1,0 +1,40 @@
+<div class="container">
+
+    <div class="row center-parent">
+        <button type="button" class="btn btn-lg btn-primary"
+                (click)="navigateTocreateGame()">
+            Create New Game
+        </button>
+    </div>
+
+    <br>
+    <br>
+
+    <h3 class="row center-parent">Multiplayer Games</h3>
+
+    <br>
+
+    <table *ngIf="currentGames" class="table table-striped">
+        <tr class="row">
+            <th>Creator</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+
+        <tr class="row" *ngFor="#game of currentGames">
+            <td class="participant">
+                <img class="img-rounded img-thumbnail"
+                     src='{{game.options.participants[0].profileImageURL}}'
+                >
+                {{game.options.participants[0].displayName}}
+            </td>
+            <td>{{game.created | date: 'dd.MM.yyyy HH:mm' }}</td>
+            <td>
+                <button type="button" class="btn btn-lg btn-primary"
+                        (click)="joinGame(game)">
+                    Join Game
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>

@@ -43,6 +43,8 @@ export interface IGame{
     secondPickId: string;
     turn: string;
     options: GameOptions;
+    created: any;
+    lastModified: string;
 }
 
 export class Game implements IGame {
@@ -51,6 +53,8 @@ export class Game implements IGame {
     unmatchedPairs;
     firstPickId : string;
     secondPickId: string;
+    created: any;
+    lastModified: string;
     turn: string;
     options: GameOptions;
 
@@ -59,6 +63,7 @@ export class Game implements IGame {
         this.unmatchedPairs = unmatchedPairs;
         this.options = options;
         this.turn = options.participants[0].id;
+        this.created = new Date().toString();
     }
 }
 
