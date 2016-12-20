@@ -1,4 +1,9 @@
+$break-x-small: 400px;
 $break-small: 600px;
+$break-medium: 800px;
+$break-large: 1200px;
+
+
 
 .card-container {
   margin-left: auto;
@@ -6,9 +11,23 @@ $break-small: 600px;
   margin-bottom: 10px;
   width: 180px;
   height: 259px;
-  @media screen and (max-width: $break-small) {
+
+  @media screen and (max-width: $break-large) and (min-width:  $break-medium) {
+    width: 160px;
+    height: 230px;
+  }
+
+  @media screen and (max-width: $break-medium) and (min-width:  $break-small) {
+    width: 140px;
+    height: 202px;
+  }
+  @media screen and (max-width: $break-small) and (min-width:  $break-x-small) {
     width: 100px;
     height: 144px;
+  }
+  @media screen and (max-width: $break-x-small) {
+    width: 80px;
+    height: 115px;
   }
 
   position: relative;
@@ -17,6 +36,11 @@ $break-small: 600px;
   -ms-perspective: 800px;
   -o-perspective: 800px;
   perspective: 800px;
+}
+
+.countdown{
+  padding-bottom: 10px;
+  padding-right: 15px;
 }
 
 .card-back{
