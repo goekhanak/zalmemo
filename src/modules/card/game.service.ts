@@ -273,7 +273,6 @@ export class GameService {
 
         let gameCretorId = game.options.participants[0].id;
 
-
         for (var i = 0; i < this.activeUsers.length; i++) {
             let user: Participant = this.activeUsers[i];
 
@@ -281,7 +280,6 @@ export class GameService {
                 return true;
             }
         }
-
 
         return false;
     }
