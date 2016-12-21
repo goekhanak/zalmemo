@@ -44,7 +44,7 @@ export interface IGame{
     turn: string;
     options: GameOptions;
     created: any;
-    lastModified: string;
+    lastPlayed: string;
 }
 
 export class Game implements IGame {
@@ -54,7 +54,7 @@ export class Game implements IGame {
     firstPickId : string;
     secondPickId: string;
     created: any;
-    lastModified: string;
+    lastPlayed: string;
     turn: string;
     options: GameOptions;
 

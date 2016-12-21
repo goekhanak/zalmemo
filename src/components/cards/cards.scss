@@ -1,4 +1,9 @@
+$break-x-small: 400px;
 $break-small: 600px;
+$break-medium: 800px;
+$break-large: 1200px;
+
+
 
 .card-container {
   margin-left: auto;
@@ -6,9 +11,23 @@ $break-small: 600px;
   margin-bottom: 10px;
   width: 180px;
   height: 259px;
-  @media screen and (max-width: $break-small) {
+
+  @media screen and (max-width: $break-large) and (min-width:  $break-medium) {
+    width: 160px;
+    height: 230px;
+  }
+
+  @media screen and (max-width: $break-medium) and (min-width:  $break-small) {
+    width: 140px;
+    height: 202px;
+  }
+  @media screen and (max-width: $break-small) and (min-width:  $break-x-small) {
     width: 100px;
     height: 144px;
+  }
+  @media screen and (max-width: $break-x-small) {
+    width: 80px;
+    height: 115px;
   }
 
   position: relative;
@@ -18,6 +37,7 @@ $break-small: 600px;
   -o-perspective: 800px;
   perspective: 800px;
 }
+
 
 .card-back{
   height: 100%;
@@ -62,9 +82,37 @@ $break-small: 600px;
   backface-visibility: hidden;
 }
 
-.participant{
+.gameinfo{
   padding-bottom: 10px;
+}
+
+.countdown{
+  padding-bottom: 5px;
+  margin-top: 20px;
+  padding-top: 20px;
   padding-right: 15px;
+  padding-left: 20px;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display:inline;
+  font-size: 125%;
+}
+
+.countdown-high{
+  color: green;
+}
+.countdown-medium{
+  color:orange;
+}
+.countdown-low{
+  color:red;
+}
+
+
+.participant{
+  padding-right: 15px;
+  display:inline;
 }
 
 .participant img {
