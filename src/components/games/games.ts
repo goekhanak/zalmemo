@@ -41,7 +41,14 @@ export class Games {
     constructor(public gameService: GameService, private router: Router, private authService: AuthService) {
 
         this.currentUser = this.authService.currentUser();
+        this.loadMultiplayerGames();
 
+        // Loading games every 20 seconds
+        // TODO: listen to presences and child_added of games
+        setInterval(() => {this.loadMultiplayerGames()}, 1000 * 20 );
+    }
+
+    private loadMultiplayerGames() {
         this.gameService.getMultiplayerGames().then((games: IGame[]) => {
             console.log('getMultiplayerGames Promise resolved !');
             console.log(games);

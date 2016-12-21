@@ -40,6 +40,8 @@ export class Cards {
     public remainingSeconds: number;
     public currentUser: Participant;
 
+    private checkRemainingSecondsIntervalId: number;
+
 
     constructor(public gameService: GameService, params: RouteParams, private router: Router, private authService: AuthService) {
 
@@ -79,7 +81,7 @@ export class Cards {
             }
         });
 
-        setInterval(() => this.setRemainingSeconds(), 1000);
+        this.checkRemainingSecondsIntervalId = setInterval(() => this.setRemainingSeconds(), 500);
     }
 
     updateView(updatedGame: IGame): void {
@@ -225,6 +227,7 @@ export class Cards {
         // end of game
         if (this.game.unmatchedPairs === 0) {
             this.remainingSeconds = null;
+            clearInterval(this.checkRemainingSecondsIntervalId);
             return;
         }
 
@@ -232,13 +235,15 @@ export class Cards {
         let now:Date = new Date();
         let lastModified: Date =  new Date(this.game.lastPlayed);
         var dif: number = now.getTime() - lastModified.getTime();
-        var seconds = dif / 1000;
-        this.remainingSeconds = Math.round(seconds);
+        var difSeconds = dif / 1000;
+        difSeconds = Math.round(difSeconds);
+        this.remainingSeconds = 10 - difSeconds < 0 ? 0 : 10 - difSeconds;
+
         this.checkRemainingSeconds();
     }
 
     private checkRemainingSeconds(): void{
-        if( this.remainingSeconds > 10  && this.currentUser.id === this.game.turn){
+        if( this.remainingSeconds <= 0  && this.currentUser.id === this.game.turn){
             console.log("Timeout user haven't played");
             this.nextParticipantsTurn();
             this.gameService.updateGame(this.game);
