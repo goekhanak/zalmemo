@@ -15,12 +15,13 @@ import {AuthService} from "../auth/auth-service";
 export class GameService {
 
     game: ReplaySubject<IGame> = new ReplaySubject(1);
-    opponentCandidates: ReplaySubject<Participant[]> = new ReplaySubject(1);
+    activeUsers: Participant[];
     oldGameRef: Firebase;
     participantsRef: Firebase;
 
     constructor(private ref: Firebase, private cardService: CardService, private authService: AuthService) {
         this.participantsRef = new Firebase(FIREBASE_PRESENCE);
+        this.loadActiveUsers();
     }
 
 
@@ -37,34 +38,28 @@ export class GameService {
         });
     }
 
-    public getGameOpponentCandidates(): Promise< Participant[]> {
+    public loadActiveUsers(): void {
+        this.participantsRef.once("value", (snapshot) => {
+            var presences = snapshot.val();
+            console.log('Participants: ', presences);
+            this.activeUsers = this.mapToParticipantArray(snapshot.val());
+            console.log('this.activeUsers: ', presences);
 
-        return new Promise((resolve, reject) => {
-
-            this.participantsRef.once("value", (snapshot) => {
-                var presences = snapshot.val();
-                console.log('Participants: ', presences);
-                this.subscribeParticipantUpdates();
-                resolve(this.filterOpponentParticipants(presences));
-            }, function (err) {
-                console.log('The read failed: ', err.code);
-                reject(err);
-            });
+            this.subscribeParticipantUpdates();
+        }, function (err) {
+            console.log('The  failed: ', err.code);
         });
     }
 
-    private filterOpponentParticipants(presences) {
-        let opponentCandidates: Participant[] = [];
+    private mapToParticipantArray(presences: any) {
+        let participants: Participant[] = [];
 
         for (var userId in presences) {
             if (presences.hasOwnProperty(userId)) {
-                // add other users as potential candidates
-                if (userId !== this.authService.userId) {
-                    opponentCandidates.push(presences[userId]);
-                }
+                participants.push(presences[userId]);
             }
         }
-        return opponentCandidates;
+        return participants;
     };
 
     private subscribeParticipantUpdates() {
@@ -75,7 +70,7 @@ export class GameService {
         console.log('Updated Participant DataKey: ', snapshot.key());
         console.log('Updated Participant Data: ', snapshot.val());
 
-        this.opponentCandidates.next(this.filterOpponentParticipants(snapshot.val()));
+        this.activeUsers = this.mapToParticipantArray(snapshot.val());
     }
 
     public createNewGame(gameOptions: GameOptions) {
@@ -229,12 +224,12 @@ export class GameService {
         return undefined;
     }
 
-    private filterGamesWithPresences(uncompletedGames: any) :IGame[] {
+    private filterGamesWithPresences(uncompletedGames: any): IGame[] {
 
-        let filteredGames : IGame[] = [];
+        let filteredGames: IGame[] = [];
 
         for (var key in uncompletedGames) {
-            let game : IGame = uncompletedGames[key];
+            let game: IGame = uncompletedGames[key];
 
             // if(!game.key){
             //     console.log('Deleting game: !!', key);
@@ -256,15 +251,36 @@ export class GameService {
 
             game.key = key;
 
-            if(game.created){
+            if (game.created) {
                 game.created = new Date(game.created);
             }
 
-            if(game.options.gameType && game.options.gameType === GameType.MULTIPLAYER){
+
+            if (game.options.gameType && game.options.gameType === GameType.MULTIPLAYER && this.isCreatorActive(game)) {
                 filteredGames.push(game);
             }
         }
 
         return filteredGames;
+    }
+
+    private isCreatorActive(game: IGame) {
+
+        if (!this.activeUsers) {
+            console.error('No active users for filtering!');
+            return true
+        }
+
+        let gameCretorId = game.options.participants[0].id;
+
+        for (var i = 0; i < this.activeUsers.length; i++) {
+            let user: Participant = this.activeUsers[i];
+
+            if (gameCretorId === user.id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

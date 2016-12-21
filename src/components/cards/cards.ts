@@ -142,7 +142,6 @@ export class Cards {
     }
 
 
-
     isThisUserTurn(participant: Participant): boolean {
         return participant.id === this.game.turn;
     }
@@ -153,7 +152,6 @@ export class Cards {
 
         this.DisplayArticleInNewTab(card);
     }
-
 
 
     pickCard(card: ICard) {
@@ -219,8 +217,13 @@ export class Cards {
         this.gameService.updateGame(this.game);
     }
 
-    private setRemainingSeconds():void{
-        if(!this.game.lastPlayed ){
+    private setRemainingSeconds(): void {
+        if (!this.game.lastPlayed) {
+            return;
+        }
+
+        //  only one player is active
+        if (this.game.options.participants.length === 1) {
             return;
         }
 
@@ -232,8 +235,8 @@ export class Cards {
         }
 
         console.log("Inside set remaing seconds")
-        let now:Date = new Date();
-        let lastModified: Date =  new Date(this.game.lastPlayed);
+        let now: Date = new Date();
+        let lastModified: Date = new Date(this.game.lastPlayed);
         var dif: number = now.getTime() - lastModified.getTime();
         var difSeconds = dif / 1000;
         difSeconds = Math.round(difSeconds);
@@ -242,8 +245,8 @@ export class Cards {
         this.checkRemainingSeconds();
     }
 
-    private checkRemainingSeconds(): void{
-        if( this.remainingSeconds <= 0  && this.currentUser.id === this.game.turn){
+    private checkRemainingSeconds(): void {
+        if (this.remainingSeconds <= 0 && this.currentUser.id === this.game.turn) {
             console.log("Timeout user haven't played");
             this.nextParticipantsTurn();
             this.gameService.updateGame(this.game);
