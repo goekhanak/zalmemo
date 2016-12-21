@@ -53,7 +53,7 @@ export class App {
 
 
   navigateToMainScreen(): void {
-    window.location.replace('/');
+    this.router.navigate(['/Games']);
   }
 
 }
