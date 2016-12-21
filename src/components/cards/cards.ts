@@ -128,7 +128,7 @@ export class Cards {
             }
         }
 
-        this.checkGameOver();
+        this.checkGameOverMessageShouldBeDisplayed();
     }
 
     logError(err) {
@@ -203,8 +203,11 @@ export class Cards {
                 this.game.lastPlayed = new Date().toString();
 
                 // game over
-                this.checkGameOver();
+                if (this.game.unmatchedPairs === 0 && this.game.options.gameType === GameType.MULTIPLAYER) {
+                    this.gameService.updateGameScore(this.game);
+                }
 
+                this.checkGameOverMessageShouldBeDisplayed();
 
             } else { // no match
                 this.game.secondPickId = card.id;
@@ -215,7 +218,7 @@ export class Cards {
         this.gameService.updateGame(this.game);
     }
 
-    private checkGameOver() {
+    private checkGameOverMessageShouldBeDisplayed() {
 
         if (this.gameOverDisplayed === false && this.game.unmatchedPairs === 0) {
 
