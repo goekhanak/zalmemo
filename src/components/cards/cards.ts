@@ -224,6 +224,11 @@ export class Cards {
             return;
         }
 
+        //  only one player is active
+        if(this.game.options.participants.length === 1){
+            return;
+        }
+
         // end of game
         if (this.game.unmatchedPairs === 0) {
             this.remainingSeconds = null;
