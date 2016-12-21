@@ -8,6 +8,7 @@ import { Cards } from '../cards/cards'
 import {CreateGame} from '../create/create'
 import {Games} from "../games/games";
 import {Standings} from "../standings/standings";
+import {Router} from "angular2/src/router/router";
 
 const styles: string = require('./app.scss');
 const template: string = require('./app.html');
@@ -35,7 +36,7 @@ const template: string = require('./app.html');
 export class App {
   authenticated: boolean = false;
 
-  constructor(private auth: AuthService, routeHelper: AuthRouteHelper) {
+  constructor(private auth: AuthService, routeHelper: AuthRouteHelper, private router: Router) {
     auth.subscribe((authenticated: boolean) => {
       this.authenticated = authenticated;
     });
@@ -44,6 +45,10 @@ export class App {
   signOut(): void {
     this.auth.signOut();
     window.location.replace('/');
+  }
+
+  navigateToStandings(): void {
+    this.router.navigate(['/Standings']);
   }
 
 

@@ -43,11 +43,9 @@
     float: left;
     list-style: none;
 
-    &:last-child {
-      margin-left: 12px;
-      padding-left: 12px;
-      border-left: 1px solid #333;
-    }
+    margin-left: 12px;
+    padding-left: 12px;
+    border-left: 1px solid #333;
 
     &:first-of-type {
       border: none;
