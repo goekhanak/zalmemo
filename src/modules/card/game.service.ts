@@ -1,4 +1,4 @@
-import {IGame, GameType} from './card'
+import {IGame, GameType, UserScore, UserGameResult} from './card'
 import {CardService} from './card.service'
 import {ICard} from "./card";
 import {Card} from "./card";
@@ -8,7 +8,7 @@ import {GameOptions} from "./card";
 import {LegacyHtmlParser} from "angular2/src/compiler/legacy_template";
 import {Level} from "./card";
 import {Participant} from "./card";
-import {FIREBASE_PRESENCE} from "../../config";
+import {FIREBASE_PRESENCE, FIREBASE_SCORES} from "../../config";
 import {AuthService} from "../auth/auth-service";
 
 
@@ -18,11 +18,17 @@ export class GameService {
     activeUsers: Participant[];
     oldGameRef: Firebase;
     participantsRef: Firebase;
+    gamePushed: boolean = false;
+    private scoresRef;
 
     constructor(private ref: Firebase, private cardService: CardService, private authService: AuthService) {
         this.participantsRef = new Firebase(FIREBASE_PRESENCE);
+        this.scoresRef = new Firebase(FIREBASE_SCORES);
+
         this.loadActiveUsers();
     }
+
+
 
 
     public getMultiplayerGames(): Promise<Game[]> {
@@ -231,24 +237,6 @@ export class GameService {
         for (var key in uncompletedGames) {
             let game: IGame = uncompletedGames[key];
 
-            // if(!game.key){
-            //     console.log('Deleting game: !!', key);
-            //     let deleteRef = this.ref.child(key);
-            //     deleteRef.remove();
-            // }
-
-            // if(!game.created){
-            //     console.log('Deleting game which does not have created!!', key);
-            //     let deleteRef = this.ref.child(key);
-            //     deleteRef.remove();
-            // }
-
-            // if(!game.options.gameType || game.options.gameType === GameType.SINGLE){
-            //     console.log('Deleting game which does not have gameType!!', key);
-            //     let deleteRef = this.ref.child(key);
-            //     deleteRef.remove();
-            // }
-
             game.key = key;
 
             if (game.created) {
@@ -283,4 +271,94 @@ export class GameService {
 
         return false;
     }
+
+
+    /*Game score update related staff*/
+
+    public updateGameScore(game: IGame) {
+
+        // No need to update score for single player games
+        if (game.options.gameType == GameType.SINGLE) {
+            return;
+        }
+
+        if (this.gamePushed === true) {
+            return;
+        }
+
+        for (var i = 0; i < game.options.participants.length; i++) {
+
+            var user: Participant = game.options.participants[i];
+
+            let userGameResult : UserGameResult = this.getUserGameResult(game, user.id);
+            this.updateUserScore(user, userGameResult);
+
+            this.gamePushed = true;
+        }
+    }
+
+    private getUserGameResult(game: IGame, userId: string) : UserGameResult{
+        let winner: Participant = game.options.participants[0];
+        let isDraw: boolean = true;
+
+
+        for (let i = 1; i < game.options.participants.length; i++) {
+            let participant = game.options.participants[i];
+
+            if (participant.score !== winner.score) {
+                isDraw = false;
+            }
+
+            if (participant.score > winner.score) {
+                winner = participant;
+            }
+        }
+
+        if(isDraw === true){
+            return UserGameResult.DRAW;
+        }else if(winner.id !== userId){
+            return UserGameResult.LOSE;
+        }else{
+            return UserGameResult.WIN;
+        }
+    }
+
+    private updateUserScore(user: Participant, userGameResult : UserGameResult) {
+        let userScoreRef = this.scoresRef.child(user.id);
+
+        userScoreRef.once('value', (snapshot) => {
+            console.log("Get userScoreRef: ", snapshot.val());
+
+            let score: UserScore;
+
+            if (!snapshot.val()) {
+                score = new UserScore(user.id, user.displayName, user.profileImageURL);
+            } else {
+                score = snapshot.val();
+            }
+
+            switch (userGameResult){
+                case UserGameResult.WIN :
+                    score.wins++;
+                    break;
+                case UserGameResult.LOSE :
+                    score.loses++;
+                    break;
+                case UserGameResult.DRAW :
+                    score.draw++;
+                    break;
+            }
+
+            console.log('userScoreRef: ', userScoreRef.key());
+            console.log('score: ', score);
+
+            userScoreRef.set(score,   (err) => {
+                console.log("set score card failed: ", err);
+            });
+
+        }, function (err) {
+            console.log('Error userScoreRef: ', err.code);
+        });
+    }
+
 }

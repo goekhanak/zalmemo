@@ -95,6 +95,22 @@ export class Participant{
     }
 }
 
+
+export class UserScore{
+    id: string;
+    displayName: string;
+    profileImageURL: string;
+    wins: number = 0;
+    loses: number = 0;
+    draw: number = 0;
+
+    constructor(id: string, displayName: string, profileImageURL: string) {
+        this.id = id;
+        this.displayName = displayName;
+        this.profileImageURL = profileImageURL;
+    }
+}
+
 export class GameOptions{
     category: string;
     level: Level;
@@ -113,5 +129,11 @@ export class GameOptions{
 export enum GameType{
     SINGLE,
     MULTIPLAYER
+}
+
+export enum UserGameResult{
+    WIN,
+    LOSE,
+    DRAW
 }
 
