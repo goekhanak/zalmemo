@@ -3,6 +3,6 @@ export const FIREBASE_TASKS_URL: string = `${FIREBASE_URL}/tasks`;
 export const FIREBASE_CARDS_URL: string = `${FIREBASE_URL}/games`;
 export const FIREBASE_AM_ONLINE : string = `${FIREBASE_URL}/.info/connected`;
 export const FIREBASE_PRESENCE : string = `${FIREBASE_URL}/presence/`;
-export const FIREBASE_SCORES : string = `${FIREBASE_URL}/scores/`;
+export const FIREBASE_STANDINGS : string = `${FIREBASE_URL}/scores/`;
 
 

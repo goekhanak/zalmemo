@@ -1,0 +1,32 @@
+<div class="container">
+
+
+
+    <br>
+    <br>
+
+    <h3 class="row center-parent">Standings</h3>
+
+    <br>
+
+    <table *ngIf="standings" class="table table-striped">
+        <tr class="row">
+            <th>User</th>
+            <th>Win</th>
+            <th>Loss</th>
+            <th>Draw</th>
+        </tr>
+
+        <tr class="row" *ngFor="#user of standings">
+            <td class="participant">
+                <img class="img-rounded img-thumbnail"
+                     src='{{user.profileImageURL}}'
+                >
+                {{user.displayName}}
+            </td>
+            <td>{{user.wins}}</td>
+            <td>{{user.loses}}</td>
+            <td>{{user.draw}}</td>
+        </tr>
+    </table>
+</div>

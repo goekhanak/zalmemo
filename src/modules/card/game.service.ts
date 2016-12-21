@@ -8,7 +8,7 @@ import {GameOptions} from "./card";
 import {LegacyHtmlParser} from "angular2/src/compiler/legacy_template";
 import {Level} from "./card";
 import {Participant} from "./card";
-import {FIREBASE_PRESENCE, FIREBASE_SCORES} from "../../config";
+import {FIREBASE_PRESENCE, FIREBASE_STANDINGS} from "../../config";
 import {AuthService} from "../auth/auth-service";
 
 
@@ -19,16 +19,14 @@ export class GameService {
     oldGameRef: Firebase;
     participantsRef: Firebase;
     gamePushed: boolean = false;
-    private scoresRef;
+    private standingsRef;
 
     constructor(private ref: Firebase, private cardService: CardService, private authService: AuthService) {
         this.participantsRef = new Firebase(FIREBASE_PRESENCE);
-        this.scoresRef = new Firebase(FIREBASE_SCORES);
+        this.standingsRef = new Firebase(FIREBASE_STANDINGS);
 
         this.loadActiveUsers();
     }
-
-
 
 
     public getMultiplayerGames(): Promise<Game[]> {
@@ -275,6 +273,20 @@ export class GameService {
 
     /*Game score update related staff*/
 
+    public getStandings(): Promise<UserScore[]> {
+
+        return new Promise((resolve, reject) => {
+            this.standingsRef.orderByChild('wins').once("value", (snapshot) => {
+                console.log("Standings: ", snapshot.val());
+                resolve(this.mapToStandingsArray(snapshot.val()));
+            }, function (err) {
+                console.log('Standings read failed: ', err.code);
+                reject(err);
+            });
+        });
+    }
+
+
     public updateGameScore(game: IGame) {
 
         // No need to update score for single player games
@@ -324,7 +336,7 @@ export class GameService {
     }
 
     private updateUserScore(user: Participant, userGameResult : UserGameResult) {
-        let userScoreRef = this.scoresRef.child(user.id);
+        let userScoreRef = this.standingsRef.child(user.id);
 
         userScoreRef.once('value', (snapshot) => {
             console.log("Get userScoreRef: ", snapshot.val());
@@ -361,4 +373,15 @@ export class GameService {
         });
     }
 
+    private mapToStandingsArray(standingsObject: any): UserScore[] {
+        let standingsArray: UserScore[] = [];
+
+        for (var key in standingsObject) {
+            let userScore: UserScore = standingsObject[key];
+            standingsArray.push(userScore);
+        }
+
+        // Firebase only provides ascending order
+        return standingsArray.reverse();
+    }
 }

@@ -7,6 +7,7 @@ import { Tasks } from '../tasks/tasks';
 import { Cards } from '../cards/cards'
 import {CreateGame} from '../create/create'
 import {Games} from "../games/games";
+import {Standings} from "../standings/standings";
 
 const styles: string = require('./app.scss');
 const template: string = require('./app.html');
@@ -26,6 +27,7 @@ const template: string = require('./app.html');
   {path: '/', component: SignIn, as: 'SignIn'},
   {path: '/tasks', component: Tasks, as: 'Tasks'},
   {path: '/create', component: CreateGame, as: 'CreateGame'},
+  {path: '/standings', component: Standings, as: 'Standings'},
   {path: '/cards/:key', component: Cards, as: 'Cards'},
   {path: '/games', component: Games, as: 'Games'}
 ])
