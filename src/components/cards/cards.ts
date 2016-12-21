@@ -41,6 +41,7 @@ export class Cards {
     public currentUser: Participant;
 
     private checkRemainingSecondsIntervalId: number;
+    private gameOverDisplayed = false;
 
 
     constructor(public gameService: GameService, params: RouteParams, private router: Router, private authService: AuthService) {
@@ -126,6 +127,8 @@ export class Cards {
                 this.game.options.participants[i].flipCounter = updatedGame.options.participants[i].flipCounter;
             }
         }
+
+        this.checkGameOver();
     }
 
     logError(err) {
@@ -169,12 +172,16 @@ export class Cards {
             return;
         }
 
+        if (this.game.options.gameType === GameType.MULTIPLAYER && this.game.options.participants.length === 1) {
+            alert('Wait for an opponent to join.');
+            return;
+        }
+
         this.flip(card);
         this.incrementFlipCounter();
 
         let firstPick: ICard = this.getCardForId(this.game.firstPickId);
         let secondPick: ICard = this.getCardForId(this.game.secondPickId);
-
 
         // FirstPick need to be
         if (!firstPick || secondPick) {
@@ -186,8 +193,6 @@ export class Cards {
             }
 
             this.game.firstPickId = card.id;
-
-
         } else {
 
             // Do we have a match
@@ -198,15 +203,8 @@ export class Cards {
                 this.game.lastPlayed = new Date().toString();
 
                 // game over
-                if (this.game.unmatchedPairs === 0) {
-                    if (this.game.options.gameType === GameType.SINGLE) {
-                        alert('Congratulations you revealed all cards in ' + this.getCurrentFlipCounter() / 2 + ' attempts! ' +
-                            '\n You can click on any article to display at Zalando shop.');
-                    } else {
-                        alert(this.getWinnersName() + ' won the game !' +
-                            '\n You can click on any article to display at Zalando shop.')
-                    }
-                }
+                this.checkGameOver();
+
 
             } else { // no match
                 this.game.secondPickId = card.id;
@@ -217,11 +215,26 @@ export class Cards {
         this.gameService.updateGame(this.game);
     }
 
+    private checkGameOver() {
+
+        if (this.gameOverDisplayed === false && this.game.unmatchedPairs === 0) {
+
+            this.gameOverDisplayed = true;
+
+            if (this.game.options.gameType === GameType.SINGLE) {
+                alert('Congratulations you revealed all cards in ' + this.getCurrentFlipCounter() / 2 + ' attempts! ' +
+                    '\n You can click on any article to display at Zalando shop.');
+            } else {
+                alert(this.getWinnersMessage() +
+                    '\n You can click on any article to display at Zalando shop.')
+            }
+        }
+    }
+
     private setRemainingSeconds(): void {
         if (!this.game.lastPlayed) {
             return;
         }
-
         //  only one player is active
         if (this.game.options.participants.length === 1) {
             return;
@@ -335,17 +348,29 @@ export class Cards {
         return false;
     }
 
-    private getWinnersName(): string {
-        let winner: Participant;
-        for (let i = 0; i < this.game.options.participants.length; i++) {
+    private getWinnersMessage(): string {
+        let winner: Participant = this.game.options.participants[0];
+        let isDraw: boolean = true;
+
+
+        for (let i = 1; i < this.game.options.participants.length; i++) {
             let participant = this.game.options.participants[i];
 
-            if (!winner || participant.score > winner.score) {
+            if (participant.score !== winner.score) {
+                isDraw = false;
+            }
+
+            if (participant.score > winner.score) {
                 winner = participant;
             }
         }
 
-        return winner.id === this.currentUser.id ? 'You' : winner.displayName;
-
+        if (isDraw) {
+            return 'It is a draw!'
+        } else if (winner.id === this.currentUser.id) {
+            return 'Congratulations you won the game!'
+        } else {
+            return winner.displayName + ' won the game!'
+        }
     }
 }
