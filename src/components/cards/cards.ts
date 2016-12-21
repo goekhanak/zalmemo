@@ -370,7 +370,7 @@ export class Cards {
         } else if (winner.id === this.currentUser.id) {
             return 'Congratulations you won the game!'
         } else {
-            return winner.displayName + 'won the game!'
+            return winner.displayName + ' won the game!'
         }
     }
 }
