@@ -64,10 +64,10 @@ export class Cards {
         if (this.isCurrentUserAlreadyInParticipants()) {
             console.log('Current user is already among participants: ', this.currentUser);
 
-        } else if (this.game.options.participants.length > 1) {
+        } else if (this.game.options.participants.length > 2) {
             // TODO show warning
             console.log('There are already enough pariticipants: ', this.currentUser);
-            this.router.navigate(['/']);
+            alert("There are already enough participants in this game!");
         } else {
             console.log('Adding new participant to the game: ', this.currentUser);
             this.game.options.participants.push(this.currentUser);
@@ -308,11 +308,25 @@ export class Cards {
     }
 
     private nextParticipantsTurn(): void {
-        for (let i = 0; i < this.game.options.participants.length; i++) {
-            let participant = this.game.options.participants[i];
 
-            if (participant.id !== this.game.turn) {
-                this.game.turn = participant.id;
+        let participants = this.game.options.participants;
+        // nothing to do
+        if (participants.length === 1) {
+            return;
+        }
+
+        for (let i = 0; i < participants.length; i++) {
+
+            if (participants[i].id === this.game.turn) {
+
+                let nextTurnParticipantIndex;
+                if (i + 1 < participants.length) {
+                    nextTurnParticipantIndex = i + 1;
+                } else {
+                    nextTurnParticipantIndex = 0;
+                }
+
+                this.game.turn = participants[nextTurnParticipantIndex].id;
                 this.game.lastPlayed = new Date().toString();
                 break;
             }

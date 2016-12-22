@@ -111,20 +111,20 @@ $break-large: 1200px;
 
 
 .participant{
-  padding-right: 15px;
+  padding-left: 10px;
   display:inline;
 }
 
 .participant img {
   height: 48px;
   width: 48px;
+  display:inline;
 }
 .participant .score {
   padding-top: 10px;
   padding-bottom: 10px;
-  padding-right: 5px;
-  padding-left: 5px;
   height: 100%;
+  display:inline;
 }
 
 .participant .opacity {

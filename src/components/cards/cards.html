@@ -7,13 +7,15 @@
         >
             {{remainingSeconds}}
         </div>
-        <div *ngFor="#participant of game.options.participants" class="pull-right participant">
-            <div class="score pull-right">{{participant.score}}</div>
+        <div class="pull-right">
+            <div *ngFor="#participant of game.options.participants" class="participant">
+                <img class="img-rounded img-thumbnail"
+                     [ngClass]="{'opacity' : !isThisUserTurn(participant)}"
+                     src='{{participant.profileImageURL}}'
+                     title="{{participant.displayName}}">
 
-            <img class="img-rounded img-thumbnail pull-right"
-                 [ngClass]="{'opacity' : !isThisUserTurn(participant)}"
-                 src='{{participant.profileImageURL}}'
-                 title="{{participant.displayName}}">
+                <div class="score">{{participant.score}}</div>
+            </div>
         </div>
     </div>
 
