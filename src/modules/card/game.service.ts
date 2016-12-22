@@ -381,7 +381,8 @@ export class GameService {
             standingsArray.push(userScore);
         }
 
-        // Firebase only provides ascending order
-        return standingsArray.reverse();
+        return standingsArray.sort( (first : UserScore, second : UserScore) => {
+            return  second.wins - first.wins;
+        });
     }
 }
