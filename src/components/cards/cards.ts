@@ -265,6 +265,13 @@ export class Cards {
         if (this.remainingSeconds <= 0 && this.currentUser.id === this.game.turn) {
             console.log("Timeout user haven't played");
             this.nextParticipantsTurn();
+
+            let firstPick: ICard = this.getCardForId(this.game.firstPickId);
+            if (firstPick) {
+                this.game.firstPickId = null;
+                console.log('Setting Null to first pick');
+                this.closeCard(firstPick);
+            }
             this.gameService.updateGame(this.game);
         }
     }
@@ -328,10 +335,19 @@ export class Cards {
 
                 this.game.turn = participants[nextTurnParticipantIndex].id;
                 this.game.lastPlayed = new Date().toString();
+
                 break;
             }
         }
     }
+
+    private closeCard(card: ICard): void {
+        if (card.flipped === true) {
+            console.log('Closing card: ', card);
+            card.flipped = false;
+        }
+    }
+
 
     private flip(card: ICard) {
 
